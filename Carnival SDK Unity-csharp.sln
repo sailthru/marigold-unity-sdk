@@ -1,0 +1,46 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{A13D7475-03E6-2B57-099C-8E852414F244}") = "Carnival SDK Unity", "Assembly-CSharp-firstpass-vs.csproj", "{A46D54CF-930B-2081-C4D8-252F0D7233DB}"
+EndProject
+Project("{A13D7475-03E6-2B57-099C-8E852414F244}") = "Carnival SDK Unity", "Assembly-CSharp-vs.csproj", "{8E42F0EE-EFBF-8537-E6BB-792F03DFF6EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A46D54CF-930B-2081-C4D8-252F0D7233DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A46D54CF-930B-2081-C4D8-252F0D7233DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A46D54CF-930B-2081-C4D8-252F0D7233DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A46D54CF-930B-2081-C4D8-252F0D7233DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E42F0EE-EFBF-8537-E6BB-792F03DFF6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E42F0EE-EFBF-8537-E6BB-792F03DFF6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E42F0EE-EFBF-8537-E6BB-792F03DFF6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E42F0EE-EFBF-8537-E6BB-792F03DFF6EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+														GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.IndentWidth = 4
+		$3.EolMarker = Unix
+		$3.inheritsSet = Mono
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
+	EndGlobalSection
+
+EndGlobal
