@@ -2,6 +2,11 @@
 #import <Foundation/Foundation.h>
 
 @interface CarnivalWrapper ()
+/*
+ * We need to hold these blocks to make sure they are not released 
+ * by ARC before they're executed and the scope variable are destroyed. 
+ * Seems to be unique to the Unity runtime and Objective-C++.
+ */
 @property (nonatomic, copy) void (^tagReturnBlock)(NSArray *tags, NSError *error);
 @property (nonatomic, copy) void (^tagSetBlock)(NSArray *tags, NSError *error);
 @property (nonatomic, copy) void (^stringAttributeSetBlock)(NSError *error);
@@ -15,25 +20,27 @@
 @end
 @implementation CarnivalWrapper
 
-- (id) init {
-    self = [super init];
-    if (self) {
-        carnivalInstance = self;
-    }
-    return self;
-}
+# pragma mark - C Methods
 
-//C Methods
+# pragma mark Init
 
+/*
+ * Use of carnivalInstance is to effectively call self inside C++ methods, which you can't do. 
+ */
 void initCarnival () {
     if (!carnivalInstance) {
         [[CarnivalWrapper alloc] init];
     }
 }
+
+# pragma mark Engine
+
 void _startEngine(char *apiKey) {
     printf("We got here\n:");
     [Carnival startEngine:[NSString stringWithUTF8String:apiKey]];
 }
+
+# pragma mark Tags
 
 void _setTags(char *tagString, const char *GameObjectName,const char *TagCallback,const char *ErrorCallback) {
     initCarnival();
@@ -43,26 +50,32 @@ void _setTags(char *tagString, const char *GameObjectName,const char *TagCallbac
 
 void _getTags(const char *GameObjectName,const char *TagCallback,const char *ErrorCallback) {
     initCarnival();
-
     [carnivalInstance getTagsAndCallback:[NSString stringWithUTF8String:GameObjectName]
                         andTagsCallback:[NSString stringWithUTF8String:TagCallback]
                         andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
 }
 
+# pragma mark Message Stream
+
 void _showMessageStream() {
     initCarnival();
-
     [carnivalInstance showMesssageStream];
 }
+
+# pragma mark Location
 
 void _updateLocation(double lat, double lon) {
     CLLocation *loc = [[CLLocation alloc] initWithLatitude:lat longitude:lon];
     [Carnival updateLocation:loc];
 }
 
+# pragma mark Custom Events
+
 void _logEvent(const char *event) {
     [Carnival logEvent:[NSString stringWithUTF8String:event]];
 }
+
+# pragma mark Custom Attributes
 
 void _setString(const char *string, const char *key, const char *GameObjectName, const char *ErrorCallback) {
     initCarnival();
@@ -78,23 +91,36 @@ void _setDate(int64_t secondsSince1970, const char *key, const char *GameObjectN
     initCarnival();
     [carnivalInstance setDate:[NSDate dateWithTimeIntervalSince1970:secondsSince1970] forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
 }
+
 void _setFloat(double floatValue, const char *key, const char *GameObjectName,  const char *ErrorCallback) {
     initCarnival();
     [carnivalInstance setFloat:floatValue forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
 }
+
 void _setInteger(int64_t intValue, const char *key, const char *GameObjectName, const char *ErrorCallback) {
     initCarnival();
     [carnivalInstance setInteger:intValue forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
 }
+
 void _removeAttribute(const char *key, const char *GameObjectName, const char *ErrorCallback) {
     initCarnival();
     [carnivalInstance unsetValueForKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
 }
 
 
+# pragma mark - Obj-C Methods
 
-//Obj-C Methods
-# pragma mark - Tags
+# pragma mark Init
+
+- (id) init {
+    self = [super init];
+    if (self) {
+        carnivalInstance = self;
+    }
+    return self;
+}
+
+# pragma mark Tags
 - (void)getTagsAndCallback:(NSString *)gameObjectName andTagsCallback:(NSString *)tagCallback andErrorCallback:(NSString *)errorCallback {
     self.tagReturnBlock = ^(NSArray *tags, NSError *error) {
         if (tags) {
@@ -121,7 +147,7 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
     [Carnival setTagsInBackground:tags withResponse:self.tagSetBlock];
 }
 
-# pragma mark - Stream
+# pragma mark Stream
 
 - (void)showMesssageStream {
     CarnivalStreamViewController *streamVC = [[CarnivalStreamViewController alloc] init];
@@ -140,7 +166,7 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
     [self.navVC dismissViewControllerAnimated:YES completion:NULL];
 }
 
-# pragma mark - Custom Attributes
+# pragma mark Custom Attributes
 
 - (void)setString:(NSString *)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
     self.stringAttributeSetBlock = ^(NSError *error) {
