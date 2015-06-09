@@ -107,6 +107,7 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
     
     [Carnival getTagsInBackgroundWithResponse:self.tagReturnBlock];
 }
+
 - (void)setTags:(NSArray *)tags withGameObject:(NSString *)gameObjectName andTagsCallback:(NSString *)tagCallback andErrorCallback:(NSString *)errorCallback {
     self.tagSetBlock = ^(NSArray *tags, NSError *error) {
         if (tags) {
@@ -126,7 +127,10 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
     CarnivalStreamViewController *streamVC = [[CarnivalStreamViewController alloc] init];
     self.navVC = [[UINavigationController alloc] initWithRootViewController:streamVC];
     
-    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStylePlain target:self action:@selector(closeButtonPressed:)];
+    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"CarnivalResources.bundle/cp_close_button.png"]  style:UIBarButtonItemStylePlain target:self action:@selector(closeButtonPressed:)];
+    
+    [closeItem setTintColor:[UIColor blackColor]];
+    
     [streamVC.navigationItem setRightBarButtonItem:closeItem];
     
     [UnityGetGLViewController() presentViewController:self.navVC animated:YES completion:nil];
