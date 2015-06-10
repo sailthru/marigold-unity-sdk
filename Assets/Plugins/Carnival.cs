@@ -8,6 +8,7 @@ using System;
 public class Carnival : MonoBehaviour
 {
 	#region Externals
+#if UNITY_IOS
 	[DllImport("__Internal")]
 	private static extern void _startEngine (string apiKey);
 
@@ -43,18 +44,23 @@ public class Carnival : MonoBehaviour
 
 	[DllImport("__Internal")]
 	private static extern void _removeAttribute (string key);
+	#endif
 	#endregion
 
 
 	#region Carnival SDK methods
 	// Start Engine
 
-	public static void StartEngine(string apiKey, string googleProjectNumber)
+	public static void StartEngineIOS(string apiKey)
 	{
-		Debug.Log ("Start Engine is getting called");
 		#if UNITY_IOS
 		Carnival._startEngine (apiKey);
-		#elif UNITY_ANDROID
+		#endif
+	}
+
+	public static void StartEngineAndroid(string apiKey, string googleProjectNumber)
+	{
+		#if UNITY_ANDROID
 		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
 		_plugin.CallStatic("startEngine", googleProjectNumber, apiKey);
 		#endif
@@ -92,7 +98,7 @@ public class Carnival : MonoBehaviour
 		Carnival._showMessageStream ();
 		#elif UNITY_ANDROID
 		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
-		_plugin.CallStatic("showStream");
+		_plugin.CallStatic("openStream");
 		#endif
 	}
 
@@ -141,8 +147,8 @@ public class Carnival : MonoBehaviour
 
 
 	public static void SetDate (DateTime date , string key) {
-		#if UNITY_IOS
 		Int64 unixTimestamp = (Int64)((date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
+		#if UNITY_IOS
 		Carnival._setDate (unixTimestamp, key);
 		#elif UNITY_ANDROID
 		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");

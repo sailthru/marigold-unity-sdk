@@ -10,7 +10,8 @@ public class CarnivalUnityApp : MonoBehaviour {
 	void Start () {
 		//Start up the engine
 
-		Carnival.StartEngine("6c566d865f4d647ab6f2c9f2653d670090751b80", ""); //Carnival Test App
+		Carnival.StartEngineIOS("6c566d865f4d647ab6f2c9f2653d670090751b80"); //Carnival Test App
+		Carnival.StartEngineAndroid("37d2197e847a3cd61921bed16f8ffdd1119cbb94", "834890833418");
 
 		// Set up Handlers 
 		Carnival.OnErrorEvent += (object sender, CarnivalErrorEventArgs e) => {
