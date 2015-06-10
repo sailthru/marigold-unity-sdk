@@ -33,7 +33,7 @@ public class Carnival : MonoBehaviour
 	private static extern void _setBool (bool boolValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setDate (UInt64 date, string key);
+	private static extern void _setDate (Int64 date, string key);
 
 	[DllImport("__Internal")]
 	private static extern void _setFloat (double floatValue, string key);
@@ -141,8 +141,8 @@ public class Carnival : MonoBehaviour
 
 
 	public static void SetDate (DateTime date , string key) {
-		UInt64 unixTimestamp = (UInt64)(-1 * (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
 		#if UNITY_IOS
+		Int64 unixTimestamp = (Int64)(-1 * (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
 		Carnival._setDate (unixTimestamp, key);
 		#elif UNITY_ANDROID
 		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
