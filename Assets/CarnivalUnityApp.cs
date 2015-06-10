@@ -10,8 +10,8 @@ public class CarnivalUnityApp : MonoBehaviour {
 	void Start () {
 		//Start up the engine
 
-		Carnival.StartEngineIOS("6c566d865f4d647ab6f2c9f2653d670090751b80"); //Carnival Test App
-		Carnival.StartEngineAndroid("37d2197e847a3cd61921bed16f8ffdd1119cbb94", "834890833418");
+		Carnival.StartEngineIOS ("6c566d865f4d647ab6f2c9f2653d670090751b80"); //Carnival Test App
+		Carnival.StartEngineAndroid ("37d2197e847a3cd61921bed16f8ffdd1119cbb94", "834890833418");
 
 		// Set up Handlers 
 		Carnival.OnErrorEvent += (object sender, CarnivalErrorEventArgs e) => {
@@ -19,13 +19,13 @@ public class CarnivalUnityApp : MonoBehaviour {
 		};
 		Carnival.OnTagsRecievedEvent += (object sender, CarnivalTagsRecievedEvent e) => {
 			foreach(string tag in e.Tags) {
-				Debug.Log(tag);
+				Debug.Log (tag);
 			}
 		};
 
 		//Set some tags
 		string[] tagsToSet = {"unity_app", "level1", "pro_player", "has_shared"};
-		Carnival.SetTags(tagsToSet);
+		Carnival.SetTags (tagsToSet);
 
 		// Get tags again
 		Carnival.GetTags ();
