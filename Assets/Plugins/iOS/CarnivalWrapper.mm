@@ -25,7 +25,7 @@
 # pragma mark Init
 
 /*
- * Use of carnivalInstance is to effectively call self inside C++ methods, which you can't do. 
+ * Use of carnivalInstance is to effectively call self inside C++ methods, which you can't do.
  */
 void initCarnival () {
     if (!carnivalInstance) {
@@ -42,17 +42,15 @@ void _startEngine(char *apiKey) {
 
 # pragma mark Tags
 
-void _setTags(char *tagString, const char *GameObjectName,const char *TagCallback,const char *ErrorCallback) {
+void _setTags(char *tagString) {
     initCarnival();
-    [carnivalInstance setTags:[[NSString stringWithUTF8String:tagString] componentsSeparatedByString:@","] withGameObject:[NSString stringWithUTF8String:GameObjectName] andTagsCallback:[NSString stringWithUTF8String:TagCallback] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setTags:[[NSString stringWithUTF8String:tagString] componentsSeparatedByString:@","]];
     
 }
 
-void _getTags(const char *GameObjectName,const char *TagCallback,const char *ErrorCallback) {
+void _getTags() {
     initCarnival();
-    [carnivalInstance getTagsAndCallback:[NSString stringWithUTF8String:GameObjectName]
-                        andTagsCallback:[NSString stringWithUTF8String:TagCallback]
-                        andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance getTags];
 }
 
 # pragma mark Message Stream
@@ -77,34 +75,34 @@ void _logEvent(const char *event) {
 
 # pragma mark Custom Attributes
 
-void _setString(const char *string, const char *key, const char *GameObjectName, const char *ErrorCallback) {
+void _setString(const char *string, const char *key) {
     initCarnival();
-    [carnivalInstance setString:[NSString stringWithUTF8String:string] forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setString:[NSString stringWithUTF8String:string] forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setBool(bool boolValue, const char *key, const char *GameObjectName, const char *ErrorCallback) {
+void _setBool(bool boolValue, const char *key) {
     initCarnival();
-    [carnivalInstance setBoolean:boolValue forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setBoolean:boolValue forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setDate(int64_t secondsSince1970, const char *key, const char *GameObjectName,  const char *ErrorCallback) {
+void _setDate(int64_t secondsSince1970, const char *key) {
     initCarnival();
-    [carnivalInstance setDate:[NSDate dateWithTimeIntervalSince1970:secondsSince1970] forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setDate:[NSDate dateWithTimeIntervalSince1970:secondsSince1970] forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setFloat(double floatValue, const char *key, const char *GameObjectName,  const char *ErrorCallback) {
+void _setFloat(double floatValue, const char *key) {
     initCarnival();
-    [carnivalInstance setFloat:floatValue forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setFloat:floatValue forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setInteger(int64_t intValue, const char *key, const char *GameObjectName, const char *ErrorCallback) {
+void _setInteger(int64_t intValue, const char *key) {
     initCarnival();
-    [carnivalInstance setInteger:intValue forKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance setInteger:intValue forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _removeAttribute(const char *key, const char *GameObjectName, const char *ErrorCallback) {
+void _removeAttribute(const char *key) {
     initCarnival();
-    [carnivalInstance unsetValueForKey:[NSString stringWithUTF8String:key] withGameObject:[NSString stringWithUTF8String:GameObjectName] andErrorCallback:[NSString stringWithUTF8String:ErrorCallback]];
+    [carnivalInstance unsetValueForKey:[NSString stringWithUTF8String:key]];
 }
 
 
@@ -121,26 +119,23 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
 }
 
 # pragma mark Tags
-- (void)getTagsAndCallback:(NSString *)gameObjectName andTagsCallback:(NSString *)tagCallback andErrorCallback:(NSString *)errorCallback {
+- (void)getTags {
     self.tagReturnBlock = ^(NSArray *tags, NSError *error) {
         if (tags) {
-            UnitySendMessage([gameObjectName UTF8String], [tagCallback UTF8String], [[tags componentsJoinedByString:@","] UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveTags", [[tags componentsJoinedByString:@","] UTF8String]);
         }
         if (error) {
-            UnitySendMessage([gameObjectName UTF8String], [errorCallback UTF8String], [[error localizedDescription] UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     
     [Carnival getTagsInBackgroundWithResponse:self.tagReturnBlock];
 }
 
-- (void)setTags:(NSArray *)tags withGameObject:(NSString *)gameObjectName andTagsCallback:(NSString *)tagCallback andErrorCallback:(NSString *)errorCallback {
+- (void)setTags:(NSArray *)tags {
     self.tagSetBlock = ^(NSArray *tags, NSError *error) {
-        if (tags) {
-            UnitySendMessage([gameObjectName UTF8String], [tagCallback UTF8String], [[tags componentsJoinedByString:@","] UTF8String]);
-        }
         if (error) {
-            UnitySendMessage([gameObjectName UTF8String], [errorCallback UTF8String], [[error localizedDescription] UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     
@@ -168,55 +163,55 @@ void _removeAttribute(const char *key, const char *GameObjectName, const char *E
 
 # pragma mark Custom Attributes
 
-- (void)setString:(NSString *)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)setString:(NSString *)value forKey:(NSString *)key {
     self.stringAttributeSetBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival setString:value forKey:key withResponse:self.stringAttributeSetBlock];
 }
 
-- (void)setBoolean:(BOOL)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)setBoolean:(BOOL)value forKey:(NSString *)key {
     self.booleanAttributeSetBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival setBool:value forKey:key withResponse:self.booleanAttributeSetBlock];
 }
 
-- (void)setDate:(NSDate *)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)setDate:(NSDate *)value forKey:(NSString *)key {
     self.dateAttributeSetBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival setDate:value forKey:key withResponse:self.dateAttributeSetBlock];
 }
 
-- (void)setInteger:(NSInteger)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)setInteger:(NSInteger)value forKey:(NSString *)key {
     self.integerAttributeSetBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival setInteger:value forKey:key withResponse:self.integerAttributeSetBlock];
 }
 
-- (void)setFloat:(CGFloat)value forKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)setFloat:(CGFloat)value forKey:(NSString *)key {
     self.floatAttributeSetBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival setFloat:value forKey:key withResponse:self.floatAttributeSetBlock];
 }
 
-- (void)unsetValueForKey:(NSString *)key withGameObject:(NSString *)gameObject andErrorCallback:(NSString *)errorCallback {
+- (void)unsetValueForKey:(NSString *)key {
     self.unsetAttributeBlock = ^(NSError *error) {
         if (error) {
-            UnitySendMessage([gameObject UTF8String], [errorCallback UTF8String], [error.localizedDescription UTF8String]);
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
     [Carnival removeAttributeWithKey:key withResponse:self.unsetAttributeBlock];
