@@ -124,6 +124,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._setString (stringValue, key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setStringAttribute", key, stringValue);
 		#endif
 	}
 
@@ -132,23 +134,29 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._setBool (boolValue, key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setBooleanAttribute", key, boolValue);
 		#endif
 	}
 
 
 	public static void SetDate (DateTime date , string key) {
-		#if UNITY_IOS
 		UInt64 unixTimestamp = (UInt64)(-1 * (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
+		#if UNITY_IOS
 		Carnival._setDate (unixTimestamp, key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setDateAttribute", key, unixTimestamp);
 		#endif
 	}
 
 
-	public static void SetFloat (double floatValue, string key) {
+	public static void SetFloat (float floatValue, string key) {
 		#if UNITY_IOS
 		Carnival._setFloat (floatValue, key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setFloatAttribute", key, floatValue);
 		#endif
 	}
 
@@ -157,6 +165,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._setInteger (integerValue, key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setIntegerAttribute", key, integerValue);
 		#endif
 	}
 
@@ -164,6 +174,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._removeAttribute (key);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("removeAttribute", key);
 		#endif
 	}
 
