@@ -45,6 +45,7 @@ public class Carnival : MonoBehaviour
 	private static extern void _removeAttribute (string key);
 	#endregion
 
+
 	#region Carnival SDK methods
 	// Start Engine
 
@@ -54,6 +55,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._startEngine (apiKey);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("startEngine", googleProjectNumber, apiKey);
 		#endif
 	}
 
@@ -64,6 +67,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._setTags(string.Join(",", tags));
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("setTags", string.Join(",", tags));
 		#endif
 	}
 
@@ -73,6 +78,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._getTags();
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("getTags");
 		#endif
 	
 	}
@@ -84,6 +91,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._showMessageStream ();
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("showStream");
 		#endif
 	}
 
@@ -93,6 +102,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._updateLocation (lat, lon);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("updateLocation", lat, lon);
 		#endif
 	}
 
@@ -102,6 +113,8 @@ public class Carnival : MonoBehaviour
 		#if UNITY_IOS
 		Carnival._logEvent (eventName);
 		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnival.sdk.unitywrapper.CarnivalWrapper");
+		_plugin.CallStatic("logEvent", eventName);
 		#endif
 	}
 
