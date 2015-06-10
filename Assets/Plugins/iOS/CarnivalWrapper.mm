@@ -90,7 +90,7 @@ void _setDate(int64_t secondsSince1970, const char *key) {
     [carnivalInstance setDate:[NSDate dateWithTimeIntervalSince1970:secondsSince1970] forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setFloat(double floatValue, const char *key) {
+void _setFloat(float floatValue, const char *key) {
     initCarnival();
     [carnivalInstance setFloat:floatValue forKey:[NSString stringWithUTF8String:key]];
 }

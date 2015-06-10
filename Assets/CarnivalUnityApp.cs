@@ -38,7 +38,7 @@ public class CarnivalUnityApp : MonoBehaviour {
 		//Set Some Custom Attributes
 		Carnival.SetString ("Some String", "Unity-String");
 		Carnival.SetBool (true, "Unity-Boolean");
-		Carnival.SetFloat (3.141D, "Unity-Float");
+		Carnival.SetFloat (3.141F, "Unity-Float");
 		Carnival.SetDate (DateTime.Now, "Unity-Date");
 		Carnival.SetInteger (123, "Unity-Integer");
 
