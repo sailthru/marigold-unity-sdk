@@ -4,18 +4,18 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-public class Carnival
-{
 
+public class Carnival : MonoBehaviour
+{
 	#region Externals
 	[DllImport("__Internal")]
 	private static extern void _startEngine (string apiKey);
 
 	[DllImport("__Internal")]
-	private static extern void _setTags (string tags, string GameObjectName, string TagCallback, string ErrorCallback);
+	private static extern void _setTags (string tags);
 
 	[DllImport("__Internal")]
-	private static extern void _getTags (string GameObjectName, string TagCallback, string ErrorCallback);
+	private static extern void _getTags ();
 
 	[DllImport("__Internal")]
 	private static extern void _showMessageStream();
@@ -27,32 +27,28 @@ public class Carnival
 	private static extern void _logEvent (string eventName);
 
 	[DllImport("__Internal")]
-	private static extern void _setString (string stringValue, string key, string gameObjectName, string errorCallback);
+	private static extern void _setString (string stringValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setBool (bool boolValue, string key, string gameObjectName, string errorCallback);
+	private static extern void _setBool (bool boolValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setDate (UInt64 date, string key, string gameObjectName, string errorCallback);
+	private static extern void _setDate (UInt64 date, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setFloat (float floatValue, string key, string gameObjectName, string errorCallback);
+	private static extern void _setFloat (double floatValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setInteger (UInt64 integerValue, string key, string gameObjectName, string errorCallback);
+	private static extern void _setInteger (UInt64 integerValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _removeAttribute (string key, string gameObjectName, string errorCallback);
+	private static extern void _removeAttribute (string key);
 	#endregion
 
-
-
-
-
-
+	#region Carnival SDK methods
 	// Start Engine
 
-	public static void StartEngine(string apiKey)
+	public static void StartEngine(string apiKey, string googleProjectNumber)
 	{
 		Debug.Log ("Start Engine is getting called");
 		#if UNITY_IOS
@@ -63,19 +59,19 @@ public class Carnival
 
 	// Tags
 
-	public static void SetTags(string[] tags, string GameObjectName, string TagCallback, string ErrorCallback)
+	public static void SetTags(string[] tags)
 	{
 		#if UNITY_IOS
-		Carnival._setTags(string.Join(",", tags), GameObjectName, TagCallback, ErrorCallback);
+		Carnival._setTags(string.Join(",", tags));
 		#elif UNITY_ANDROID
 		#endif
 	}
 
 
-	public static void GetTags(string GameObjectName, string TagCallback, string ErrorCallback)
+	public static void GetTags()
 	{
 		#if UNITY_IOS
-		Carnival._getTags(GameObjectName, TagCallback, ErrorCallback);
+		Carnival._getTags();
 		#elif UNITY_ANDROID
 		#endif
 	
@@ -111,51 +107,78 @@ public class Carnival
 
 	// Custom Attributes
 
-	public static void SetString (string stringValue, string key, string gameObjectName, string errorCallback) {
+	public static void SetString (string stringValue, string key) {
 		#if UNITY_IOS
-		Carnival._setString (stringValue, key, gameObjectName, errorCallback);
+		Carnival._setString (stringValue, key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
 
-	public static void SetBool (bool boolValue, string key, string gameObjectName, string errorCallback) {
+	public static void SetBool (bool boolValue, string key) {
 		#if UNITY_IOS
-		Carnival._setBool (boolValue, key, gameObjectName, errorCallback);
+		Carnival._setBool (boolValue, key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
 
-	public static void SetDate (DateTime date , string key, string gameObjectName, string errorCallback) {
+	public static void SetDate (DateTime date , string key) {
 		#if UNITY_IOS
-		Carnival._setDate ((UInt64) (date.Subtract(DateTime.MinValue.AddYears(1969)).TotalMilliseconds), key, gameObjectName, errorCallback);
+		UInt64 unixTimestamp = (UInt64)(-1 * (date.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
+		Carnival._setDate (unixTimestamp, key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
 
-	public static void SetFloat (float floatValue, string key, string gameObjectName, string errorCallback) {
+	public static void SetFloat (double floatValue, string key) {
 		#if UNITY_IOS
-		Carnival._setFloat (floatValue, key, gameObjectName, errorCallback);
+		Carnival._setFloat (floatValue, key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
 
-	public static void SetInteger (UInt64 integerValue, string key, string gameObjectName, string errorCallback) {
+	public static void SetInteger (UInt64 integerValue, string key) {
 		#if UNITY_IOS
-		Carnival._setInteger (integerValue, key, gameObjectName, errorCallback);
+		Carnival._setInteger (integerValue, key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
-	public static void RemoveAttribute (string key, string gameObjectName, string errorCallback) {
+	public static void RemoveAttribute (string key) {
 		#if UNITY_IOS
-		Carnival._removeAttribute (key, gameObjectName, errorCallback);
+		Carnival._removeAttribute (key);
 		#elif UNITY_ANDROID
 		#endif
 	}
 
+	public void ReceiveError(string errorDescription) {
+		CarnivalErrorEventArgs args = new CarnivalErrorEventArgs ();
+		args.ErrorDescription = errorDescription;
+		OnErrorEvent(this, args);
+	}
 
+	public void ReceiveTags(string tags) {
+		CarnivalTagsRecievedEvent args = new CarnivalTagsRecievedEvent ();
+		args.Tags = tags.Split (',');
+		OnTagsRecievedEvent (this, args);
+	}
+	#endregion
+
+	#region Callbabcks
+	public static event EventHandler<CarnivalErrorEventArgs> OnErrorEvent;
+	public static event EventHandler<CarnivalTagsRecievedEvent> OnTagsRecievedEvent;
+	#endregion
+
+
+}
+
+public class CarnivalErrorEventArgs : EventArgs {
+	public string ErrorDescription { get; set; }
+}
+
+public class CarnivalTagsRecievedEvent :EventArgs {
+	public string[] Tags { get; set; }
 }
