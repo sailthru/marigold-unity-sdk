@@ -167,7 +167,7 @@ public class Carnival : MonoBehaviour
 	}
 
 
-	public static void SetInteger (UInt64 integerValue, string key) {
+	public static void SetInteger (int integerValue, string key) {
 		#if UNITY_IOS
 		Carnival._setInteger (integerValue, key);
 		#elif UNITY_ANDROID
