@@ -28,6 +28,9 @@ This Unity Plugin allows you to communicate with Carnival and show the Carnival 
 
 ## Android Instructions
 
+1. Find your applications "Bundle Identifier", this can be found in the Player Settings pane, accessible from **File > Build Settings**, selecting the Android platform and clicking "Player Settings". The Bundle Identifier appears under the Identification header in the Inspector.
+2. Open up the Android manifest in **/Assets/Plugins/Android/AndroidManifest.xml** and replace all instances of `${applicationId}` with your Bundle Identifier.
+3. Run your application.
 
 ## Documentation
 
