@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/carnival_bg_pinstripe_tile"
+    android:tileMode="repeat">
+
+</bitmap><!-- From: file:/home/travis/build/carnivalmobile/carnival-android-sdk-source/sdk/src/main/res/drawable/carnival_bg_pinstripe.xml -->
