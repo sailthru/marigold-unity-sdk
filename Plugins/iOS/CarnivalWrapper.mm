@@ -95,7 +95,7 @@ void _setFloat(float floatValue, const char *key) {
     [carnivalInstance setFloat:floatValue forKey:[NSString stringWithUTF8String:key]];
 }
 
-void _setInteger(int64_t intValue, const char *key) {
+void _setInteger(int intValue, const char *key) {
     initCarnival();
     [carnivalInstance setInteger:intValue forKey:[NSString stringWithUTF8String:key]];
 }

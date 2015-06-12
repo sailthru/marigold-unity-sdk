@@ -40,7 +40,7 @@ public class Carnival : MonoBehaviour
 	private static extern void _setFloat (float floatValue, string key);
 
 	[DllImport("__Internal")]
-	private static extern void _setInteger (UInt64 integerValue, string key);
+	private static extern void _setInteger (int integerValue, string key);
 
 	[DllImport("__Internal")]
 	private static extern void _removeAttribute (string key);

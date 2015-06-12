@@ -10,8 +10,8 @@ public class CarnivalUnityApp : MonoBehaviour {
 	void Start () {
 		//Start up the engine
 
-		Carnival.StartEngineIOS ("6c566d865f4d647ab6f2c9f2653d670090751b80"); //Carnival Test App
-		Carnival.StartEngineAndroid ("37d2197e847a3cd61921bed16f8ffdd1119cbb94", "834890833418");
+		Carnival.StartEngineIOS (); //Carnival Test App //TODO: Put in a valid Carival Key here. 
+		Carnival.StartEngineAndroid (); //TODO: Put in a valid Carival Key and Google Porject Number here
 
 		// Set up Handlers 
 		Carnival.OnErrorEvent += (object sender, CarnivalErrorEventArgs e) => {
@@ -24,7 +24,7 @@ public class CarnivalUnityApp : MonoBehaviour {
 		};
 
 		//Set some tags
-		string[] tagsToSet = {"unity_app", "level1", "pro_player", "has_shared"};
+		string[] tagsToSet = {"unity_app", "level1", "pro_player", "has_shared"}; 
 		Carnival.SetTags (tagsToSet);
 
 		// Get tags again
@@ -44,7 +44,7 @@ public class CarnivalUnityApp : MonoBehaviour {
 		Carnival.SetInteger (123, "Unity-Integer");
 
 		//Remove some Custom Attributes
-		//Carnival.RemoveAttribute ("Unity-Integer");
+		Carnival.RemoveAttribute ("Unity-Integer");
 	}
 	public void OnClick() {
 		Debug.Log ("Open Stream Clicked");
