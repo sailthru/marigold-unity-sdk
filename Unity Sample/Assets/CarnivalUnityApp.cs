@@ -10,8 +10,8 @@ public class CarnivalUnityApp : MonoBehaviour {
 	void Start () {
 		//Start up the engine
 
-		Carnival.StartEngineIOS (); //Carnival Test App //TODO: Put in a valid Carival Key here. 
-		Carnival.StartEngineAndroid (); //TODO: Put in a valid Carival Key and Google Porject Number here
+		Carnival.StartEngineIOS (); //Carnival Test App //TODO: Put in a valid Carnival Key here. 
+		Carnival.StartEngineAndroid (); //TODO: Put in a valid Carnival Key and Google Project Number here
 
 		// Set up Handlers 
 		Carnival.OnErrorEvent += (object sender, CarnivalErrorEventArgs e) => {
