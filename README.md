@@ -1,7 +1,7 @@
 # Carnival Unity SDK
 
 ## Purpose
-This Unity Plugin allows you to communicate with Carnival and show the Carnival mesage stream to enable Rich, Targeted Messaging in your App.
+This Unity Plugin allows you to communicate with Carnival and show the Carnival message stream to enable Rich, Targeted Messaging in your App.
 
 ## Integration Instructions
 
