@@ -1,6 +1,13 @@
 #import "CarnivalWrapper.h"
 #import <Foundation/Foundation.h>
 
+@interface CarnivalMessage ()
+
+- (carnival_nullable instancetype)initWithDictionary:(carnival_nonnull NSDictionary *)dictionary;
+- (carnival_nonnull NSDictionary *)dictionary;
+
+@end
+
 @interface CarnivalWrapper ()
 /*
  * We need to hold these blocks to make sure they are not released 
@@ -15,6 +22,13 @@
 @property (nonatomic, copy) void (^integerAttributeSetBlock)(NSError *error);
 @property (nonatomic, copy) void (^dateAttributeSetBlock)(NSError *error);
 @property (nonatomic, copy) void (^unsetAttributeBlock)(NSError *error);
+@property (nonatomic, copy) void (^userIDBlock)(NSError *error);
+@property (nonatomic, copy) void (^messagesBlock)(NSArray *messages, NSError *error);
+@property (nonatomic, copy) void (^markAsReadBlock)(NSError *error);
+@property (nonatomic, copy) void (^removeMessageBlock)(NSError *error);
+@property (nonatomic, strong) NSArray *messages;
+@property (nonatomic, copy) void (^deviceIDBlock)(NSString *deviceID, NSError *error);
+@property (nonatomic, copy) void (^unreadCountBlock)(NSUInteger unreadCount, NSError *error);
 
 @property (nonatomic, strong) UINavigationController *navVC;
 @end
@@ -58,6 +72,16 @@ void _getTags() {
 void _showMessageStream() {
     initCarnival();
     [carnivalInstance showMesssageStream];
+}
+
+void _showMessageDetail(char *messageJSON) {
+    initCarnival();
+    CarnivalMessage *message = [carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJSON]];
+    [CarnivalMessageStream presentMessageDetailForMessage:message];
+}
+
+void _dismissMessageDetail() {
+    [CarnivalMessageStream dismissMessageDetail];
 }
 
 # pragma mark Location
@@ -105,6 +129,59 @@ void _removeAttribute(const char *key) {
     [carnivalInstance unsetValueForKey:[NSString stringWithUTF8String:key]];
 }
 
+# pragma mark - In App Notifications
+
+void _setInAppNotificationsEnabled(bool enabled) {
+    [Carnival setInAppNotificationsEnabled:enabled];
+}
+
+#pragma mark - User ID
+
+void _setUserID(const char *userID) {
+    initCarnival();
+    [carnivalInstance setUserID:[NSString stringWithUTF8String:userID]];
+}
+
+void _messages () {
+    initCarnival();
+    [carnivalInstance sendMessages];
+}
+
+void _markMessageAsRead(char *messageJSON) {
+    CarnivalMessage *message = [carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJOSN]];
+    [carnivalInstance markMessageAsRead:message];
+}
+
+void _removeMessage(const char *messageJSON) {
+    [carnivalInstance removeMessage:[carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJSON]]];
+}
+
+void _registerImpression(const char *messageJSON, int impressionType) {
+    CarnivalMessage *message = [carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJSON]];
+    if (impressionType == 0) {
+        [CarnivalMessageStream registerImpressionWithType:CarnivalImpressionTypeInAppNotificationView forMessage:message];
+    } else if (impressionType == 1) {
+         [CarnivalMessageStream registerImpressionWithType:CarnivalImpressionTypeStreamView forMessage:message];
+    } else if (impressionType == 2){
+        [CarnivalMessageStream registerImpressionWithType:CarnivalImpressionTypeDetailView forMessage:message];
+    } else {
+        NSLog(@"Impression type not supported");
+    }
+}
+
+#pragma mark Device ID 
+
+void _deviceID() {
+    initCarnival();
+    [carnivalInstance deviceID];
+}
+
+# pragma mark - Unread Count
+
+void _unreadCount() {
+    initCarnival();
+    [carnivalInstance unreadCount];
+}
 
 # pragma mark - Obj-C Methods
 
@@ -217,6 +294,97 @@ void _removeAttribute(const char *key) {
     [Carnival removeAttributeWithKey:key withResponse:self.unsetAttributeBlock];
 }
 
+#pragma mark - User ID
 
+-(void)setUserID:(NSString *)userID {
+    self.userIDBlock = ^(NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        }
+    };
+    [Carnival setUserId:userID withResponse:self.userIDBlock];
+}
+
+#pragma mark - Messages
+- (void)sendMessages {
+    __weak __typeof__(self) weakSelf = self;
+    self.messagesBlock = ^(NSArray *messages, NSError *error) {
+        __weak __typeof__(self) strongSelf = weakSelf;
+        if (strongSelf) {
+            if (error) {
+                UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+            } else {
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[strongSelf arrayOfMessageDictionariesFromMessageArray:messages] options:NSJSONWritingPrettyPrinted error:nil];
+                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                UnitySendMessage("Carnival", "ReceiveMessagesJSONData", [jsonString UTF8String]);
+            }
+        }
+    };
+    [CarnivalMessageStream messages:self.messagesBlock];
+}
+
+- (void) markMessageAsRead:(CarnivalMessage *)message {
+    self.markAsReadBlock = ^(NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        }
+    };
+    [CarnivalMessageStream markMessageAsRead:message withResponse:self.markAsReadBlock];
+}
+
+- (void) removeMessage:(CarnivalMessage *)message {
+    self.removeMessageBlock = ^(NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        }
+    };
+    [CarnivalMessageStream removeMessage:message withResponse:self.removeMessageBlock];
+}
+
+#pragma mark - Helper Methods
+
+- (NSArray *) arrayOfMessageDictionariesFromMessageArray:(NSArray *)messageArray {
+    NSMutableArray *messageDictionaries = [NSMutableArray array];
+    for (CarnivalMessage *message in messageArray) {
+        [messageDictionaries addObject:[message dictionary]];
+    }
+    return messageDictionaries;
+}
+
+- (CarnivalMessage *) messageFromJSON:(NSString *)JSONString {
+    NSData *data = [JSONString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *deserializeError = nil;
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&deserializeError];
+    
+    if (!deserializeError) {
+        return [[CarnivalMessage alloc] initWithDictionary:dict];
+    }
+    return nil;
+}
+
+#pragma mark Device ID
+- (void)deviceID {
+    self.deviceIDBlock = ^(NSString *deviceID, NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        } else {
+            UnitySendMessage("Carnival", "ReceiveDeviceID", [deviceID UTF8String]);
+        }
+    };
+    
+    [Carnival deviceID:self.deviceIDBlock];
+}
+
+#pragma mark  Unread Counts
+
+- (void)unreadCount {
+    self.unreadCountBlock = ^(NSUInteger unreadCount, NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        }
+        UnitySendMessage("Carnival", "ReceiveUnreadCount", [[NSString stringWithFormat:@"%d", unreadCount] UTF8String]);
+    };
+    [CarnivalMessageStream unreadCount:self.unreadCountBlock];
+}
 
 @end
