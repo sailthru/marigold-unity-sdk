@@ -9,8 +9,8 @@ public class CarnivalUnityApp : MonoBehaviour {
 
 		void Start () {
 		//Start up the engine
-		Carnival.StartEngineIOS("6c566d865f4d647ab6f2c9f2653d670090751b80"); //Carnival Test App
-		Carnival.StartEngineAndroid("37d2197e847a3cd61921bed16f8ffdd1119cbb94", "834890833418");
+		Carnival.StartEngineIOS(""); //Pop in your SDK Key 
+		Carnival.StartEngineAndroid("", ""); //Pop in your SDK Key and Google Project Number
 
 		Carnival.SetUserID("unity-user-1234");
 		// Set up Handlers 
