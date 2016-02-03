@@ -68,7 +68,7 @@ public class CarnivalUnityApp : MonoBehaviour {
 		Carnival.GetMessages();
 
 		//Get the unread count
-		Carnival.OnUnreadCountRecievedEvent += (object sender, CarnivalUnreadCountRecievedEvent e) => {
+		Carnival.OnUnreadCountReceivedEvent += (object sender, CarnivalUnreadCountReceivedEvent e) => {
 			Debug.Log (e.UnreadCount);
 		};
 		Carnival.UnreadCount();
