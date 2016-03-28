@@ -3,8 +3,8 @@
 
 @interface CarnivalMessage ()
 
-- (carnival_nullable instancetype)initWithDictionary:(carnival_nonnull NSDictionary *)dictionary;
-- (carnival_nonnull NSDictionary *)dictionary;
+- (nullable instancetype)initWithDictionary:(nonnull NSDictionary *)dictionary;
+- (nonnull NSDictionary *)dictionary;
 
 @end
 
@@ -148,7 +148,7 @@ void _messages () {
 }
 
 void _markMessageAsRead(char *messageJSON) {
-    CarnivalMessage *message = [carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJOSN]];
+    CarnivalMessage *message = [carnivalInstance messageFromJSON:[NSString stringWithUTF8String:messageJSON]];
     [carnivalInstance markMessageAsRead:message];
 }
 
