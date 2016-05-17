@@ -78,12 +78,6 @@ public class CarnivalUnityApp : MonoBehaviour {
 		};
 		Carnival.DeviceID();
 	}
-
-	public void OnClick() {
-		Debug.Log ("Open Stream Clicked");
-		Carnival.ShowMessageStream ();
-	}
-
 	public void OnMDClick() {
 		Debug.Log ("Message Detail Clicked");
 		Carnival.ShowMessageDetail (this.theMessages[0]);

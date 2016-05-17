@@ -16,8 +16,6 @@ extern "C" void _startEngine(char *apiKey);
 extern "C" void _setTags(char *tagString);
 extern "C" void _getTags();
 
-extern "C" void _showMessageStream();
-
 extern "C" void _updateLocation(double lat, double lon);
 
 extern "C" void _logEvent(const char *event);

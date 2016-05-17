@@ -11,7 +11,6 @@ import android.text.TextUtils;
 
 import com.carnival.sdk.Carnival;
 import com.carnival.sdk.CarnivalImpressionType;
-import com.carnival.sdk.CarnivalStreamActivity;
 import com.carnival.sdk.Message;
 import com.carnival.sdk.MessageActivity;
 import com.unity3d.player.UnityPlayer;
@@ -30,7 +29,7 @@ import java.util.List;
  * Created by Affian on 10/06/15.
  *
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("unused, unchecked")
 public class CarnivalWrapper {
 
     private static final String CARNIVAL_UNITY = "Carnival";
@@ -44,7 +43,7 @@ public class CarnivalWrapper {
             Carnival.setNotificationIcon(resourceId);
         }
 
-        Carnival.startEngine(activity, projectNumber, appKey);
+        Carnival.startEngine(activity, appKey);
 
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(activity);
         broadcastManager.registerReceiver(new BroadcastReceiver() {
@@ -54,12 +53,6 @@ public class CarnivalWrapper {
                 UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveUnreadCount", String.valueOf(count));
             }
         }, new IntentFilter(Carnival.ACTION_MESSAGE_COUNT_UPDATE));
-    }
-
-    public static void openStream() {
-        Activity activity = UnityPlayer.currentActivity;
-        Intent intent = new Intent(activity, CarnivalStreamActivity.class);
-        activity.startActivity(intent);
     }
 
     public static void getTags() {
@@ -88,7 +81,12 @@ public class CarnivalWrapper {
     }
 
     public static void deviceId() {
-        UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveDeviceID", String.valueOf(Carnival.getDeviceId()));
+        Carnival.getDeviceId(new GenericErrorHandler() {
+            @Override
+            public void onSuccess(String deviceId) {
+                UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveDeviceID", String.valueOf(deviceId));
+            }
+        });
     }
 
     public static void logEvent(String value) {
@@ -142,6 +140,7 @@ public class CarnivalWrapper {
         Carnival.removeAttribute(key, new GenericErrorHandler());
     }
 
+
     public static void setUserId(String userId) {
         Carnival.setUserId(userId, new GenericErrorHandler());
     }
@@ -189,6 +188,10 @@ public class CarnivalWrapper {
         return message;
     }
 
+    public static void setInAppNotificationsEnabled(boolean enabled) {
+        Carnival.setInAppNotificationsEnabled(enabled);
+    }
+
     public static void showMessageDetail(String messageId) {
         Intent i = new Intent(UnityPlayer.currentActivity, MessageActivity.class);
         i.putExtra(Carnival.EXTRA_MESSAGE_ID, messageId);
@@ -200,7 +203,7 @@ public class CarnivalWrapper {
                                                         Carnival.MessagesHandler,
                                                         Carnival.MessageDeletedHandler,
                                                         Carnival.MessagesReadHandler,
-                                                        Carnival.CarnivalHandler<Void> {
+                                                        Carnival.CarnivalHandler{
         @Override
         public void onSuccess() { }
 
@@ -210,8 +213,13 @@ public class CarnivalWrapper {
         @Override
         public void onSuccess(ArrayList<Message> arrayList) { }
 
-        @Override
+
         public void onSuccess(Void aVoid) { }
+
+        public void onSuccess(String string) { }
+
+        @Override
+        public void onSuccess(Object object) { }
 
         @Override
         public void onFailure(Error error) {

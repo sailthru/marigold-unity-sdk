@@ -20,9 +20,6 @@ public class Carnival : MonoBehaviour
 	private static extern void _getTags ();
 	
 	[DllImport("__Internal")]
-	private static extern void _showMessageStream();
-	
-	[DllImport("__Internal")]
 	private static extern void _updateLocation (double lat, double lon);
 	
 	[DllImport("__Internal")]
@@ -136,19 +133,6 @@ public class Carnival : MonoBehaviour
 		#elif UNITY_ANDROID
 		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
 		_plugin.CallStatic("getTags");
-		#endif
-	}
-	
-	/// <summary>
-	/// Shows the message stream.
-	/// </summary>
-	public static void ShowMessageStream()
-	{
-		#if UNITY_IOS
-		Carnival._showMessageStream ();
-		#elif UNITY_ANDROID
-		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
-		_plugin.CallStatic("openStream");
 		#endif
 	}
 	
@@ -391,14 +375,15 @@ public class Carnival : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Enables or disables the showing of in-app notifications. This is not currently supported on Android.
+	/// Enables or disables the showing of in-app notifications.
 	/// </summary>
 	/// <param name="enabled">A boolean value indicating whether in-app notfications are enabled</param>
 	public static void SetInAppNotificationsEnabled (bool enabled) {
 		#if UNITY_IOS
 		Carnival._setInAppNotificationsEnabled (enabled);
 		#elif UNITY_ANDROID
-		Debug.Log("Not currently supported on Android");
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
+		_plugin.CallStatic("setInAppNotificationsEnabled", enabled);
 		#endif
 	}
 

@@ -196,6 +196,7 @@ void _unreadCount() {
 }
 
 # pragma mark Tags
+
 - (void)getTags {
     self.tagReturnBlock = ^(NSArray *tags, NSError *error) {
         if (tags) {
@@ -217,25 +218,6 @@ void _unreadCount() {
     };
     
     [Carnival setTagsInBackground:tags withResponse:self.tagSetBlock];
-}
-
-# pragma mark Stream
-
-- (void)showMesssageStream {
-    CarnivalStreamViewController *streamVC = [[CarnivalStreamViewController alloc] init];
-    self.navVC = [[UINavigationController alloc] initWithRootViewController:streamVC];
-    
-    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"CarnivalResources.bundle/cp_close_button.png"]  style:UIBarButtonItemStylePlain target:self action:@selector(closeButtonPressed:)];
-    
-    [closeItem setTintColor:[UIColor blackColor]];
-    
-    [streamVC.navigationItem setRightBarButtonItem:closeItem];
-    
-    [UnityGetGLViewController() presentViewController:self.navVC animated:YES completion:nil];
-}
-
-- (void)closeButtonPressed:(UIButton *)button {
-    [self.navVC dismissViewControllerAnimated:YES completion:NULL];
 }
 
 # pragma mark Custom Attributes
@@ -320,10 +302,11 @@ void _unreadCount() {
             }
         }
     };
+    
     [CarnivalMessageStream messages:self.messagesBlock];
 }
 
-- (void) markMessageAsRead:(CarnivalMessage *)message {
+- (void)markMessageAsRead:(CarnivalMessage *)message {
     self.markAsReadBlock = ^(NSError *error) {
         if (error) {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
@@ -332,7 +315,7 @@ void _unreadCount() {
     [CarnivalMessageStream markMessageAsRead:message withResponse:self.markAsReadBlock];
 }
 
-- (void) removeMessage:(CarnivalMessage *)message {
+- (void)removeMessage:(CarnivalMessage *)message {
     self.removeMessageBlock = ^(NSError *error) {
         if (error) {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
@@ -343,7 +326,7 @@ void _unreadCount() {
 
 #pragma mark - Helper Methods
 
-- (NSArray *) arrayOfMessageDictionariesFromMessageArray:(NSArray *)messageArray {
+- (NSArray *)arrayOfMessageDictionariesFromMessageArray:(NSArray *)messageArray {
     NSMutableArray *messageDictionaries = [NSMutableArray array];
     for (CarnivalMessage *message in messageArray) {
         [messageDictionaries addObject:[message dictionary]];
@@ -351,7 +334,7 @@ void _unreadCount() {
     return messageDictionaries;
 }
 
-- (CarnivalMessage *) messageFromJSON:(NSString *)JSONString {
+- (CarnivalMessage *)messageFromJSON:(NSString *)JSONString {
     NSData *data = [JSONString dataUsingEncoding:NSUTF8StringEncoding];
     NSError *deserializeError = nil;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&deserializeError];
@@ -363,6 +346,7 @@ void _unreadCount() {
 }
 
 #pragma mark Device ID
+
 - (void)deviceID {
     self.deviceIDBlock = ^(NSString *deviceID, NSError *error) {
         if (error) {
