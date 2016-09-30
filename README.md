@@ -34,4 +34,4 @@ This Unity Plugin allows you to communicate with Carnival and show the Carnival 
 
 ## Documentation
 
-More documentation can be found at [docs.carnival.io](ocs.carnival.io).
+More documentation can be found at [docs.carnival.io](http://docs.carnival.io).
