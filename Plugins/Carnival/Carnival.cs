@@ -14,12 +14,6 @@ public class Carnival : MonoBehaviour
 	private static extern void _startEngine (string apiKey);
 	
 	[DllImport("__Internal")]
-	private static extern void _setTags (string tags);
-	
-	[DllImport("__Internal")]
-	private static extern void _getTags ();
-	
-	[DllImport("__Internal")]
 	private static extern void _updateLocation (double lat, double lon);
 	
 	[DllImport("__Internal")]
@@ -48,6 +42,9 @@ public class Carnival : MonoBehaviour
 
 	[DllImport("__Internal")]
 	private static extern void _setUserID (string userID);
+
+	[DllImport("__Internal")]
+	private static extern void _setUserEmail (string userEmail);
 
 	[DllImport("__Internal")]
 	private static extern void _messages ();
@@ -90,6 +87,7 @@ public class Carnival : MonoBehaviour
 		Carnival._startEngine (apiKey);
 		#endif
 	}
+
 	/// <summary>
 	///  Sets the Carnival appKey credentials for this app. 
 	///  This MUST be done before calling any other Carnival methods.
@@ -104,38 +102,7 @@ public class Carnival : MonoBehaviour
 		_plugin.CallStatic("startEngine", googleProjectNumber, apiKey);
 		#endif
 	}
-	
-	/// <summary>
-	/// Asyncronously sets the tags for Carnival for this Device.
-	/// Calling this method will overwrite any previously set tags for this Device.
-	/// Errors will be called back with an OnErrorEvent - add a handler to handle this. 
-	/// </summary>
-	/// <param name="tags"> A list of tags to set for the device. An empty list will clear the tags for this device.</param>
-	public static void SetTags(string[] tags)
-	{
-		#if UNITY_IOS
-		Carnival._setTags(string.Join(",", tags));
-		#elif UNITY_ANDROID
-		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
-		_plugin.CallStatic("setTags", string.Join(",", tags));
-		#endif
-	}
-	
-	/// <summary>
-	/// Asyncronously gets the tags for Carnival for this Device.
-	/// Tags will be returned with an OnTagsReceivedEvent - add a handler to handle this. 
-	/// Errors will be called back with an OnErrorEvent - add a handler to handle this. 
-	/// </summary>
-	public static void GetTags()
-	{
-		#if UNITY_IOS
-		Carnival._getTags();
-		#elif UNITY_ANDROID
-		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
-		_plugin.CallStatic("getTags");
-		#endif
-	}
-	
+		
 	/// <summary>
 	/// Forward a location to the Carnival iOS SDK. 
 	/// This method can be used when you’re already tracking location in your app and you just want to forward your existing calls to the Carnival iOS SDK.
@@ -334,6 +301,20 @@ public class Carnival : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Asyncronously sets the user email 
+	/// Errors will be called back with an OnErrorEvent - add a handler to handle this. 
+	/// </summary>
+	/// <param name="userID">The string value of the user ID.</param>
+	public static void SetUserEmail(string userEmail){
+		#if UNITY_IOS
+		Carnival._setUserEmail(userEmail);
+		#elif UNITY_ANDROID
+		AndroidJavaClass _plugin = new AndroidJavaClass("com.carnivalmobile.unity.CarnivalWrapper");
+		_plugin.CallStatic("setUserEmail", userEmail);
+		#endif
+	}
+
+	/// <summary>
 	/// Registers an impression for a given message.
 	/// </summary>
 	/// <param name="message">Carnival Message to create the impression on.</param>
@@ -395,15 +376,7 @@ public class Carnival : MonoBehaviour
 		args.ErrorDescription = errorDescription;
 		OnErrorEvent(this, args);
 	}
-	
-	/// <summary>
-	/// Used only by the underlying unity plugin code. Do not call.
-	/// </summary>
-	public void ReceiveTags(string tags) {
-		CarnivalTagsReceivedEvent args = new CarnivalTagsReceivedEvent ();
-		args.Tags = tags.Split (',');
-		OnTagsReceivedEvent (this, args);
-	}
+
 
 	public void ReceiveMessagesJSONData(string messagesJSON) {
 		List<CarnivalMessage> messages = new List<CarnivalMessage>();
@@ -442,7 +415,7 @@ public class Carnival : MonoBehaviour
 		if (message.messageID != null) jsonObject["id"] = message.messageID;
 		if (message.title != null) jsonObject["title"] = message.title;
 		if (message.text != null) jsonObject["text"] = message.text;
-		if (message.createdAt != null) jsonObject["createdAt"].AsDouble = (message.createdAt.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+		if (message.createdAt != null) jsonObject["created_at"].AsDouble = (message.createdAt.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 		if (message.URL != null) jsonObject["url"] = message.URL;
 		if (message.videoURL != null) jsonObject["card_media_url"] = message.videoURL;
 		if (message.imageURL != null) jsonObject["card_image_url"] = message.imageURL;
@@ -472,7 +445,6 @@ public class Carnival : MonoBehaviour
 	
 	#region Callbabcks
 	public static event EventHandler<CarnivalErrorEventArgs> OnErrorEvent;
-	public static event EventHandler<CarnivalTagsReceivedEvent> OnTagsReceivedEvent;
 	public static event EventHandler<CarnivalMessagesReceivedEvent> OnMessagesReceivedEvent;
 	public static event EventHandler<CarnivalDeviceIDReceivedEvent> OnDeviceIdReceivedEvent;
 	public static event EventHandler<CarnivalUnreadCountReceivedEvent> OnUnreadCountReceivedEvent;
@@ -486,12 +458,6 @@ public class CarnivalErrorEventArgs :EventArgs {
 	public string ErrorDescription { get; set; }
 }
 
-/// <summary>
-/// Carnival tags received event.
-/// </summary>
-public class CarnivalTagsReceivedEvent :EventArgs {
-	public string[] Tags { get; set; }
-}
 
 /// <summary>
 /// Carnival messages received event.
@@ -518,7 +484,7 @@ public class CarnivalMessage {
 public enum CarnivalImpressionType {InAppNotificationView, StreamView, DetailView};
 
 /// <summary>
-/// Carnival tags received event.
+/// Carnival Device ID received event.
 /// </summary>
 public class CarnivalDeviceIDReceivedEvent :EventArgs {
 	public string DeviceID { get; set; }

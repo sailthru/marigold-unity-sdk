@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 
+import com.carnival.sdk.AttributeMap;
 import com.carnival.sdk.Carnival;
 import com.carnival.sdk.CarnivalImpressionType;
 import com.carnival.sdk.Message;
@@ -19,11 +19,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Affian on 10/06/15.
@@ -53,23 +52,7 @@ public class CarnivalWrapper {
                 UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveUnreadCount", String.valueOf(count));
             }
         }, new IntentFilter(Carnival.ACTION_MESSAGE_COUNT_UPDATE));
-    }
-
-    public static void getTags() {
-        Carnival.getTags(new GenericErrorHandler() {
-            @Override
-            public void onSuccess(List<String> tags) {
-                String concat = TextUtils.join(",", tags);
-                UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveTags", concat);
-            }
-        });
-    }
-
-    public static void setTags(String concatList) {
-        String[] list = concatList.split(",");
-        List<String> tags = new ArrayList<>(Arrays.asList(list));
-
-        Carnival.setTagsWithResponse(tags, new GenericErrorHandler());
+        setWrapperInfo();
     }
 
     public static void updateLocation(double latitude, double longitude) {
@@ -83,7 +66,7 @@ public class CarnivalWrapper {
     public static void deviceId() {
         Carnival.getDeviceId(new GenericErrorHandler() {
             @Override
-            public void onSuccess(String deviceId) {
+            public void onSuccess(Object deviceId) {
                 UnityPlayer.UnitySendMessage(CARNIVAL_UNITY, "ReceiveDeviceID", String.valueOf(deviceId));
             }
         });
@@ -116,24 +99,38 @@ public class CarnivalWrapper {
     }
 
     public static void setBooleanAttribute (String key, boolean value) {
-        Carnival.setAttribute(key, value);
+        AttributeMap map = new AttributeMap();
+        map.setMergeRules(AttributeMap.RULE_UPDATE);
+        map.putBoolean(key, value);
+        Carnival.setAttributes(map, new GenericErrorHandler());
     }
 
     public static void setIntegerAttribute (String key, int value) {
-        Carnival.setAttribute(key, value);
+        AttributeMap map = new AttributeMap();
+        map.setMergeRules(AttributeMap.RULE_UPDATE);
+        map.putInt(key, value);
+        Carnival.setAttributes(map, new GenericErrorHandler());
     }
 
     public static void setFloatAttribute (String key, float value) {
-        Carnival.setAttribute(key, value);
+        AttributeMap map = new AttributeMap();
+        map.setMergeRules(AttributeMap.RULE_UPDATE);
+        map.putFloat(key, value);
+        Carnival.setAttributes(map, new GenericErrorHandler());
     }
 
     public static void setStringAttribute (String key, String value) {
-        Carnival.setAttribute(key, value);
-    }
+        AttributeMap map = new AttributeMap();
+        map.setMergeRules(AttributeMap.RULE_UPDATE);
+        map.putString(key, value);
+        Carnival.setAttributes(map, new GenericErrorHandler());    }
 
     public static void setDateAttribute (String key, long value) {
         Date date = new Date(value);
-        Carnival.setAttribute(key, date, new GenericErrorHandler());
+        AttributeMap map = new AttributeMap();
+        map.setMergeRules(AttributeMap.RULE_UPDATE);
+        map.putDate(key, date);
+        Carnival.setAttributes(map, new GenericErrorHandler());
     }
 
     public static void removeAttribute(String key) {
@@ -143,6 +140,29 @@ public class CarnivalWrapper {
 
     public static void setUserId(String userId) {
         Carnival.setUserId(userId, new GenericErrorHandler());
+    }
+
+    public static void setUserEmail(String userEmail) {
+        Carnival.setUserEmail(userEmail, new GenericErrorHandler());
+    }
+
+    private static void setWrapperInfo(){
+        Method setWrapperMethod = null;
+        try {
+            Class[] cArg = new Class[2];
+            cArg[0] = String.class;
+            cArg[1] = String.class;
+
+            setWrapperMethod = Carnival.class.getDeclaredMethod("setWrapper", cArg);
+            setWrapperMethod.setAccessible(true);
+            setWrapperMethod.invoke(null, "Unity", "1.0.0");
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void unreadCount() {
@@ -198,17 +218,13 @@ public class CarnivalWrapper {
         UnityPlayer.currentActivity.startActivity(i);
     }
 
-    private static class GenericErrorHandler implements Carnival.TagsHandler,
-                                                        Carnival.AttributesHandler,
+    private static class GenericErrorHandler implements Carnival.AttributesHandler,
                                                         Carnival.MessagesHandler,
                                                         Carnival.MessageDeletedHandler,
                                                         Carnival.MessagesReadHandler,
                                                         Carnival.CarnivalHandler{
         @Override
         public void onSuccess() { }
-
-        @Override
-        public void onSuccess(List<String> tags) { }
 
         @Override
         public void onSuccess(ArrayList<Message> arrayList) { }

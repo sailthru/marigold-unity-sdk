@@ -8,14 +8,16 @@
 
 @end
 
+@interface Carnival ()
++ (void)setWrapperName:(NSString *)wrapperName andVersion:(NSString *)wrapperVersion;
+@end
+
 @interface CarnivalWrapper ()
 /*
  * We need to hold these blocks to make sure they are not released 
  * by ARC before they're executed and the scope variable are destroyed. 
  * Seems to be unique to the Unity runtime and Objective-C++.
  */
-@property (nonatomic, copy) void (^tagReturnBlock)(NSArray *tags, NSError *error);
-@property (nonatomic, copy) void (^tagSetBlock)(NSArray *tags, NSError *error);
 @property (nonatomic, copy) void (^stringAttributeSetBlock)(NSError *error);
 @property (nonatomic, copy) void (^booleanAttributeSetBlock)(NSError *error);
 @property (nonatomic, copy) void (^floatAttributeSetBlock)(NSError *error);
@@ -23,6 +25,7 @@
 @property (nonatomic, copy) void (^dateAttributeSetBlock)(NSError *error);
 @property (nonatomic, copy) void (^unsetAttributeBlock)(NSError *error);
 @property (nonatomic, copy) void (^userIDBlock)(NSError *error);
+@property (nonatomic, copy) void (^userEmailBlock)(NSError *error);
 @property (nonatomic, copy) void (^messagesBlock)(NSArray *messages, NSError *error);
 @property (nonatomic, copy) void (^markAsReadBlock)(NSError *error);
 @property (nonatomic, copy) void (^removeMessageBlock)(NSError *error);
@@ -50,29 +53,10 @@ void initCarnival () {
 # pragma mark Engine
 
 void _startEngine(char *apiKey) {
-    printf("We got here\n:");
     [Carnival startEngine:[NSString stringWithUTF8String:apiKey]];
+    [Carnival setWrapperName:@"Unity" andVersion:@"1.0.0"];
 }
-
-# pragma mark Tags
-
-void _setTags(char *tagString) {
-    initCarnival();
-    [carnivalInstance setTags:[[NSString stringWithUTF8String:tagString] componentsSeparatedByString:@","]];
-    
-}
-
-void _getTags() {
-    initCarnival();
-    [carnivalInstance getTags];
-}
-
-# pragma mark Message Stream
-
-void _showMessageStream() {
-    initCarnival();
-    [carnivalInstance showMesssageStream];
-}
+# pragma mark Message Detail
 
 void _showMessageDetail(char *messageJSON) {
     initCarnival();
@@ -142,6 +126,11 @@ void _setUserID(const char *userID) {
     [carnivalInstance setUserID:[NSString stringWithUTF8String:userID]];
 }
 
+void _setUserEmail(const char *userEmail) {
+    initCarnival();
+    [carnivalInstance setUserID:[NSString stringWithUTF8String:userEmail]];
+}
+
 void _messages () {
     initCarnival();
     [carnivalInstance sendMessages];
@@ -195,31 +184,6 @@ void _unreadCount() {
     return self;
 }
 
-# pragma mark Tags
-
-- (void)getTags {
-    self.tagReturnBlock = ^(NSArray *tags, NSError *error) {
-        if (tags) {
-            UnitySendMessage("Carnival", "ReceiveTags", [[tags componentsJoinedByString:@","] UTF8String]);
-        }
-        if (error) {
-            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
-        }
-    };
-    
-    [Carnival getTagsInBackgroundWithResponse:self.tagReturnBlock];
-}
-
-- (void)setTags:(NSArray *)tags {
-    self.tagSetBlock = ^(NSArray *tags, NSError *error) {
-        if (error) {
-            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
-        }
-    };
-    
-    [Carnival setTagsInBackground:tags withResponse:self.tagSetBlock];
-}
-
 # pragma mark Custom Attributes
 
 - (void)setString:(NSString *)value forKey:(NSString *)key {
@@ -228,7 +192,9 @@ void _unreadCount() {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
-    [Carnival setString:value forKey:key withResponse:self.stringAttributeSetBlock];
+    CarnivalAttributes *attributes = [[CarnivalAttributes alloc] init];
+    [attributes setString:value forKey:key];
+    [Carnival setAttributes:attributes withResponse:self.stringAttributeSetBlock];
 }
 
 - (void)setBoolean:(BOOL)value forKey:(NSString *)key {
@@ -237,7 +203,9 @@ void _unreadCount() {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
-    [Carnival setBool:value forKey:key withResponse:self.booleanAttributeSetBlock];
+    CarnivalAttributes *attributes = [[CarnivalAttributes alloc] init];
+    [attributes setBool:value forKey:key];
+    [Carnival setAttributes:attributes withResponse:self.booleanAttributeSetBlock];
 }
 
 - (void)setDate:(NSDate *)value forKey:(NSString *)key {
@@ -246,7 +214,10 @@ void _unreadCount() {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
-    [Carnival setDate:value forKey:key withResponse:self.dateAttributeSetBlock];
+    
+    CarnivalAttributes *attributes = [[CarnivalAttributes alloc] init];
+    [attributes setDate:value forKey:key];
+    [Carnival setAttributes:attributes withResponse:self.dateAttributeSetBlock];
 }
 
 - (void)setInteger:(NSInteger)value forKey:(NSString *)key {
@@ -255,7 +226,9 @@ void _unreadCount() {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
-    [Carnival setInteger:value forKey:key withResponse:self.integerAttributeSetBlock];
+    CarnivalAttributes *attributes = [[CarnivalAttributes alloc] init];
+    [attributes setInteger:value forKey:key];
+    [Carnival setAttributes:attributes withResponse:self.integerAttributeSetBlock];
 }
 
 - (void)setFloat:(CGFloat)value forKey:(NSString *)key {
@@ -264,7 +237,9 @@ void _unreadCount() {
             UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
         }
     };
-    [Carnival setFloat:value forKey:key withResponse:self.floatAttributeSetBlock];
+    CarnivalAttributes *attributes = [[CarnivalAttributes alloc] init];
+    [attributes setFloat:value forKey:key];
+    [Carnival setAttributes:attributes withResponse:self.floatAttributeSetBlock];
 }
 
 - (void)unsetValueForKey:(NSString *)key {
@@ -286,6 +261,16 @@ void _unreadCount() {
     };
     [Carnival setUserId:userID withResponse:self.userIDBlock];
 }
+
+-(void)setUserEmail:(NSString *)userEmail {
+    self.userEmailBlock = ^(NSError *error) {
+        if (error) {
+            UnitySendMessage("Carnival", "ReceiveError", [[error localizedDescription] UTF8String]);
+        }
+    };
+    [Carnival setUserEmail:userEmail withResponse:self.userEmailBlock];
+}
+
 
 #pragma mark - Messages
 - (void)sendMessages {

@@ -13,9 +13,6 @@ CarnivalWrapper *carnivalInstance;
 
 extern "C" void _startEngine(char *apiKey);
 
-extern "C" void _setTags(char *tagString);
-extern "C" void _getTags();
-
 extern "C" void _updateLocation(double lat, double lon);
 
 extern "C" void _logEvent(const char *event);
@@ -30,6 +27,7 @@ extern "C" void _removeAttribute(const char *key);
 extern "C" void _setInAppNotificationsEnabled(bool enabled);
 
 extern "C" void _setUserID(const char *userID);
+extern "C" void _setUserEmail(const char *userID);
 
 extern "C" void _messages ();
 

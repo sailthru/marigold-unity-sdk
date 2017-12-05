@@ -7,29 +7,18 @@ using System.Runtime.InteropServices;
 public class CarnivalUnityApp : MonoBehaviour {
 	List<CarnivalMessage> theMessages = null;
 
-		void Start () {
+	void Start () {
 		//Start up the engine
 		Carnival.StartEngineIOS(""); //Pop in your SDK Key 
 		Carnival.StartEngineAndroid("", ""); //Pop in your SDK Key and Google Project Number
 
 		Carnival.SetUserID("unity-user-1234");
+		//Carnival.SetUserEmail("unity-user-1234@carnival.io");
+
 		// Set up Handlers 
 		Carnival.OnErrorEvent += (object sender, CarnivalErrorEventArgs e) => {
 			Debug.Log (e.ErrorDescription);
 		};
-
-		Carnival.OnTagsReceivedEvent += (object sender, CarnivalTagsReceivedEvent e) => {
-			foreach(string tag in e.Tags) {
-				Debug.Log(tag);
-			}
-		};
-
-		//Set some tags
-		string[] tagsToSet = {"unity_app", "level1", "pro_player", "has_shared"};
-		Carnival.SetTags(tagsToSet);
-
-		// Get tags again
-		Carnival.GetTags ();
 
 		// Set Location
 		Carnival.UpdateLocation (-44.01899F,176.565915F);
@@ -79,10 +68,13 @@ public class CarnivalUnityApp : MonoBehaviour {
 		Carnival.DeviceID();
 	}
 	public void OnMDClick() {
-		Debug.Log ("Message Detail Clicked");
-		Carnival.ShowMessageDetail (this.theMessages[0]);
+		if (this.theMessages == null || this.theMessages.Count > 0) {
+			Carnival.ShowMessageDetail (this.theMessages [0]);
 
-		//Not required, but an example of marking a message as read
-		Carnival.MarkMessageAsRead(this.theMessages[0]);
+			//Not required, but an example of marking a message as read
+			Carnival.MarkMessageAsRead (this.theMessages [0]);
+		} else {
+			Debug.Log ("There are no messages to show");
+		}
 	}
 }
