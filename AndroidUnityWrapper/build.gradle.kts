@@ -2,10 +2,11 @@
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath("com.android.tools.build:gradle:8.1.4")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -14,9 +15,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
+        mavenCentral()
+        google()
     }
 }
