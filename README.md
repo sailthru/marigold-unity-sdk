@@ -48,10 +48,7 @@ Delete the first generated line to stop Unity auto-removing the changes.
 To `allProjects > repositories`, add 
 ```
 		maven {
-			url 'https://maven.google.com'
-		}
-		maven {
-			url "https://github.com/carnivalmobile/maven-repository/raw/master/"
+			url "https://github.com/sailthru/maven-repository/raw/master/"
 		}
 
 		google()
@@ -59,20 +56,17 @@ To `allProjects > repositories`, add
 ```
 To `dependencies` add:
 ```
-	compile 'com.carnival.sdk:carnival:5.+'
-	compile 'com.android.support:appcompat-v7:26.0.2'
-	compile 'com.google.android.gms:play-services-gcm:10.2.6'
-	compile 'com.android.support:support-v4:26.0.2'
+	compile 'com.marigold.sdk:marigold:20.0.0'
 ```
 
 Inside `android`, set the following fields:
 ```
-	compileSdkVersion 26
-	buildToolsVersion '26.0.2'
+	compileSdk 34
+	buildToolsVersion = '34.0.0'
 
 	defaultConfig {
-		targetSdkVersion 26
-		applicationId 'io.carnival.unitytestapp'
+		targetSdk 34
+		applicationId 'com.marigold.sdk.unitytestapp'
 		multiDexEnabled true
 	}
 ```

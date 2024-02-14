@@ -1,5 +1,6 @@
 plugins {
     id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -16,6 +17,10 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 tasks.register<Delete>("clearJar") {
@@ -25,7 +30,7 @@ tasks.register<Delete>("clearJar") {
 tasks.register<Copy>("makeJar") {
     dependsOn("clearJar", "build")
 
-    from("build/intermediates/bundles/release/")
+    from("build/intermediates/aar_main_jar/release/")
     into("build/libs/")
     include("classes.jar")
     rename ("classes.jar", "MarigoldWrapper.jar")
@@ -39,5 +44,6 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("com.marigold.sdk:marigold:20.+")
+    implementation("com.marigold.sdk:marigold:20.0.0")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

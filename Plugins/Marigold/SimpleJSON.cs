@@ -49,7 +49,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace CarnivalSimpleJSON
+namespace MarigoldSimpleJSON
 {
 	public enum JSONBinaryTag
 	{
@@ -993,12 +993,20 @@ namespace CarnivalSimpleJSON
 		
 		public override string ToString ()
 		{
-			return "\"" + Escape (m_Data) + "\"";
+			if (Tag == JSONBinaryTag.Value) {
+				return "\"" + Escape (m_Data) + "\"";
+			} else {
+				return m_Data;
+			}
 		}
 		
 		public override string ToString (string aPrefix)
 		{
-			return "\"" + Escape (m_Data) + "\"";
+			if (Tag == JSONBinaryTag.Value) {
+				return "\"" + Escape (m_Data) + "\"";
+			} else {
+				return m_Data;
+			}
 		}
 		
 		public override string ToJSON (int prefix)
