@@ -136,6 +136,7 @@ object EngageBySailthruWrapper {
             })
         } catch (e: IllegalArgumentException) {
             MarigoldWrapper.sendErrorMessage(e)
+            return
         }
         UnityPlayer.UnitySendMessage(ENGAGE_ST_UNITY, ENGAGE_ST_RECEIVE_LINK, unwrappedLink.toString())
     }

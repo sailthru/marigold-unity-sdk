@@ -4,21 +4,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using MarigoldSimpleJSON;
+using MarigoldSDK;
 
 public class MarigoldUnityApp : MonoBehaviour {
-	List<MarigoldMessage> theMessages = null;
+	List<Message> theMessages = null;
 
 	void Start () {
 		// Start up Marigold SDK on the Unity side
 		Marigold.Start();
 
 		// Set up Marigold handlers 
-		Marigold.OnErrorEvent += (object sender, MarigoldErrorEventArgs e) => {
+		Marigold.OnErrorEvent += (object sender, ErrorEventArgs e) => {
 			Debug.Log ("Error returned: " + e.ErrorDescription);
 		};
-		Marigold.OnMessagesReceivedEvent += (object sender, MarigoldMessagesReceivedEventArgs e) => {
+		Marigold.OnMessagesReceivedEvent += (object sender, MessagesReceivedEventArgs e) => {
 			if (e.messages != null && e.messages.Count > 0) {
-				MarigoldMessage message = e.messages[0];
+				Message message = e.messages[0];
 				Debug.Log ("First Marigold message");
 				Debug.Log (message.title);
 				Debug.Log (message.messageID);
@@ -27,14 +28,14 @@ public class MarigoldUnityApp : MonoBehaviour {
 				Debug.Log (message.videoURL);
 				Debug.Log (message.type);
 				Debug.Log (message.text);
-				Marigold.RegisterImpression(message, MarigoldImpressionType.StreamView); 
+				Marigold.RegisterImpression(message, ImpressionType.StreamView); 
 			}
 			this.theMessages = e.messages;
 		};
-		Marigold.OnUnreadCountReceivedEvent += (object sender, MarigoldUnreadCountReceivedEventArgs e) => {
+		Marigold.OnUnreadCountReceivedEvent += (object sender, UnreadCountReceivedEventArgs e) => {
 			Debug.Log ("Unread Count: " + e.UnreadCount);
 		};
-		Marigold.OnDeviceIdReceivedEvent += (object sender, MarigoldDeviceIDReceivedEventArgs e) => {
+		Marigold.OnDeviceIdReceivedEvent += (object sender, DeviceIDReceivedEventArgs e) => {
 			Debug.Log ("DeviceId: " + e.DeviceID);
 		};
 
@@ -81,7 +82,7 @@ public class MarigoldUnityApp : MonoBehaviour {
 		JSONClass itemVars = new JSONClass();
 		itemVars["item"] = "var";
 		string[] tags = { "tag1", "tag2" };
-		MarigoldPurchaseItem[] purchaseItems = new MarigoldPurchaseItem[] {
+		PurchaseItem[] purchaseItems = new PurchaseItem[] {
 			new () { 
 				quantity = 2,
 				title = "test title",
@@ -94,7 +95,7 @@ public class MarigoldUnityApp : MonoBehaviour {
 			}
 		};
 
-		MarigoldPurchaseAdjustment[] purchaseAdjustments = new MarigoldPurchaseAdjustment[] {
+		PurchaseAdjustment[] purchaseAdjustments = new PurchaseAdjustment[] {
 			new () {
 				title = "tax",
 				price = -20
@@ -103,7 +104,7 @@ public class MarigoldUnityApp : MonoBehaviour {
 
 		JSONClass purchaseVars = new JSONClass();
 		purchaseVars["purchase"] = "with var";
-		MarigoldPurchase purchase = new MarigoldPurchase() {
+		Purchase purchase = new Purchase() {
 			purchaseItems = purchaseItems,
 			purchaseAdjustments = purchaseAdjustments,
 			vars = purchaseVars
@@ -120,9 +121,5 @@ public class MarigoldUnityApp : MonoBehaviour {
 		} else {
 			Debug.Log ("There are no messages to show");
 		}
-	}
-
-	public void OnSetUserIdClick() {
-		EngageBySailthru.SetUserId("test me");
 	}
 }

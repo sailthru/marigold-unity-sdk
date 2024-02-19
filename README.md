@@ -31,8 +31,10 @@ Required Tools:
 	 * AVFoundation
 	 * MediaPlayer
 	 * QuartzCore
-	* Add [Carnival.framework](https://github.com/carnivalmobile/carnival-ios-sdk/tree/master/Carnival.framework) to the Frameworks folder of your project in Xcode. Be sure to check "Copy items into destination groups' folder". 
-	* Add Carnival.framework to the Embedded Binaries section in Unity-iPhone -> General
+	* Add the Marigold.xcframework to the project in Xcode. It can be obtained through Swift Package Manager, Cocoapods, Carthage or directly from Github. See our [documentation](https://docs.mobile.sailthru.com/docs/ios-integration) for more details.
+	* Add Marigold.xcframework to the Frameworks and Libraries section in Unity-iPhone -> General. You should add the framework to both your app target and the `UnityFramework` target.
+	* Call `startEngine` on the `Marigold` class using your SDK key during the `application:didFinishLaunchingWithOptions:` method which will implemented in the app's `UnityAppController.m` file.
+	* Ensure the `UNITY_USES_REMOTE_NOTIFICATIONS` flag is set to true so your app can handle notifications.
 3. Run your application. 
 
 
@@ -56,7 +58,7 @@ To `allProjects > repositories`, add
 ```
 To `dependencies` add:
 ```
-	compile 'com.marigold.sdk:marigold:20.0.0'
+	implementation 'com.marigold.sdk:marigold:20.0.0'
 ```
 
 Inside `android`, set the following fields:
@@ -93,4 +95,4 @@ This will add Carnival and it's dependencies. Gradle sync should complete, and y
 
 ## Documentation
 
-More documentation can be found at [docs.carnival.io](docs.carnival.io).
+More documentation can be found at [docs.mobile.sailthru.com](docs.mobile.sailthru.com).
