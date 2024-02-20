@@ -5,7 +5,10 @@ import com.marigold.sdk.EngageBySailthru
 import com.marigold.sdk.EngageBySailthru.TrackHandler
 import com.marigold.sdk.Marigold
 import com.marigold.sdk.model.Purchase
-import com.unity3d.player.UnityPlayer
+import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_LINK
+import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_VARS
+import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_UNITY
+import org.jetbrains.annotations.VisibleForTesting
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -17,43 +20,51 @@ import java.net.URISyntaxException
 
 @Suppress("unused")
 object EngageBySailthruWrapper {
-    private const val ENGAGE_ST_UNITY = "EngageBySailthru"
-    private const val ENGAGE_ST_RECEIVE_VARS = "ReceiveProfileVars"
-    private const val ENGAGE_ST_RECEIVE_LINK = "ReceiveUnwrappedLink"
+    @VisibleForTesting
+    internal lateinit var engageBySailthru: EngageBySailthru
+    @VisibleForTesting
+    internal var unitySender = UnitySender()
 
     fun trackPageview(url: String, tags: String?) {
         val uri =  try {
             URI(url)
         } catch (e: Exception) {
-            MarigoldWrapper.sendErrorMessage(e)
+            unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
             return
         }
 
-        val tagsList = getStringListFromJSONArrayString(tags)
+        var tagsList: List<String>? = null
+        if (tags != null) {
+            tagsList = getStringListFromJSONArrayString(tags)
+            if (tagsList == null) return
+        }
 
-        engageBySailthru()?.trackPageview(uri, tagsList, object : TrackHandler {
+        getEngageBySailthru()?.trackPageview(uri, tagsList, object : TrackHandler {
             override fun onSuccess() {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun trackImpression(sectionId: String, urls: String?) {
-        val uris = getStringListFromJSONArrayString(urls)?.mapNotNull { url ->
-            try {
-                 URI(url)
-            } catch (e: URISyntaxException) {
-                MarigoldWrapper.sendErrorMessage(e)
-                null
+        var uris: List<URI>? = null
+        if (urls != null) {
+            uris = getStringListFromJSONArrayString(urls)?.map { url ->
+                try {
+                    URI(url)
+                } catch (e: URISyntaxException) {
+                    unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
+                    return
+                }
             }
+            if (uris == null) return
         }
 
-
-        engageBySailthru()?.trackImpression(sectionId, uris, object : TrackHandler {
+        getEngageBySailthru()?.trackImpression(sectionId, uris, object : TrackHandler {
             override fun onSuccess() {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
@@ -62,64 +73,64 @@ object EngageBySailthruWrapper {
         val uri =  try {
             URI(url)
         } catch (e: Exception) {
-            MarigoldWrapper.sendErrorMessage(e)
+            unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
             return
         }
 
-        engageBySailthru()?.trackClick(sectionId, uri, object : TrackHandler {
+        getEngageBySailthru()?.trackClick(sectionId, uri, object : TrackHandler {
             override fun onSuccess() {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun setUserEmail(userEmail: String?) {
-        engageBySailthru()?.setUserEmail(userEmail, object : Marigold.MarigoldHandler<Void?> {
+        getEngageBySailthru()?.setUserEmail(userEmail, object : Marigold.MarigoldHandler<Void?> {
             override fun onSuccess(value: Void?) {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun setUserId(userId: String?) {
-        engageBySailthru()?.setUserId(userId, object : Marigold.MarigoldHandler<Void?> {
+        getEngageBySailthru()?.setUserId(userId, object : Marigold.MarigoldHandler<Void?> {
             override fun onSuccess(value: Void?) {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun logEvent(value: String) {
-        engageBySailthru()?.logEvent(value)
+        getEngageBySailthru()?.logEvent(value)
     }
 
     fun logEvent(value: String, varsString: String) {
         val vars = getVarsJson(varsString) ?: return
-        engageBySailthru()?.logEvent(value, vars)
+        getEngageBySailthru()?.logEvent(value, vars)
     }
 
     fun setProfileVars(varsString: String) {
         val vars = getVarsJson(varsString) ?: return
-        engageBySailthru()?.setProfileVars(vars, object : Marigold.MarigoldHandler<Void?> {
+        getEngageBySailthru()?.setProfileVars(vars, object : Marigold.MarigoldHandler<Void?> {
             override fun onSuccess(value: Void?) {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun getProfileVars() {
-        engageBySailthru()?.getProfileVars(object : Marigold.MarigoldHandler<JSONObject?> {
+        getEngageBySailthru()?.getProfileVars(object : Marigold.MarigoldHandler<JSONObject?> {
             override fun onSuccess(value: JSONObject?) {
                 value?.let { vars ->
-                    UnityPlayer.UnitySendMessage(ENGAGE_ST_UNITY, ENGAGE_ST_RECEIVE_VARS, vars.toString())
+                    unitySender.sendUnityMessage(ENGAGE_ST_UNITY, ENGAGE_ST_RECEIVE_VARS, vars.toString())
                 }
             }
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
@@ -127,36 +138,36 @@ object EngageBySailthruWrapper {
     fun handleSailthruLink(linkString: String) {
         val uri = Uri.parse(linkString)
         val unwrappedLink = try {
-            val engageBySailthru = engageBySailthru() ?: return
+            val engageBySailthru = getEngageBySailthru() ?: return
             engageBySailthru.handleSailthruLink(uri, object : Marigold.MarigoldHandler<Void?> {
                 override fun onSuccess(value: Void?) {}
                 override fun onFailure(error: Error) {
-                    MarigoldWrapper.sendErrorMessage(error)
+                    unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
                 }
             })
         } catch (e: IllegalArgumentException) {
-            MarigoldWrapper.sendErrorMessage(e)
+            unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
             return
         }
-        UnityPlayer.UnitySendMessage(ENGAGE_ST_UNITY, ENGAGE_ST_RECEIVE_LINK, unwrappedLink.toString())
+        unitySender.sendUnityMessage(ENGAGE_ST_UNITY, ENGAGE_ST_RECEIVE_LINK, unwrappedLink.toString())
     }
 
     fun logPurchase(purchaseString: String) {
         val purchase = getPurchase(purchaseString) ?: return
-        engageBySailthru()?.logPurchase(purchase, object : Marigold.MarigoldHandler<Void?> {
+        getEngageBySailthru()?.logPurchase(purchase, object : Marigold.MarigoldHandler<Void?> {
             override fun onSuccess(value: Void?) {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
 
     fun logAbandonedCart(purchaseString: String) {
         val purchase = getPurchase(purchaseString) ?: return
-        engageBySailthru()?.logAbandonedCart(purchase, object : Marigold.MarigoldHandler<Void?> {
+        getEngageBySailthru()?.logAbandonedCart(purchase, object : Marigold.MarigoldHandler<Void?> {
             override fun onSuccess(value: Void?) {}
             override fun onFailure(error: Error) {
-                MarigoldWrapper.sendErrorMessage(error)
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
             }
         })
     }
@@ -164,7 +175,7 @@ object EngageBySailthruWrapper {
     private fun getVarsJson(varsString: String): JSONObject? = try {
         JSONObject(varsString)
     } catch (e: JSONException) {
-        MarigoldWrapper.sendErrorMessage(e)
+        unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
         null
     }
 
@@ -175,10 +186,10 @@ object EngageBySailthruWrapper {
         constructor.isAccessible = true
         constructor.newInstance(purchaseJson)
     } catch (e: InvocationTargetException) {
-        MarigoldWrapper.sendErrorMessage(e.cause ?: Error("Error creating purchase instance"))
+        unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e.cause ?: Error("Error creating purchase instance"))
         null
     } catch (e: Exception) {
-        MarigoldWrapper.sendErrorMessage(e)
+        unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
         null
     }
 
@@ -188,19 +199,27 @@ object EngageBySailthruWrapper {
         return try {
             val list = mutableListOf<String>()
             val jsonArray = JSONArray(arrayString)
-            for (i in 0..jsonArray.length()) {
+            for (i in 0 until jsonArray.length()) {
                 list.add(jsonArray.getString(i))
             }
             list
         } catch (e: Exception) {
+            unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
             null
         }
     }
 
-    private fun engageBySailthru(): EngageBySailthru? = try {
-        EngageBySailthru()
-    } catch (e: Exception) {
-        MarigoldWrapper.sendErrorMessage(e)
-        null
+    private fun getEngageBySailthru(): EngageBySailthru? {
+        if (this::engageBySailthru.isInitialized) {
+            return engageBySailthru
+        }
+
+        return try {
+            engageBySailthru = EngageBySailthru()
+            engageBySailthru
+        } catch (e: Exception) {
+            unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
+            null
+        }
     }
 }

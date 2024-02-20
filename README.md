@@ -41,7 +41,7 @@ Required Tools:
 ## Android Instructions
 1. Go to **File > Build Settings**
 2. Select Android, use Gradle as the build system, and check **Export Project**
-3. Open the exported in Android Studio 3+. Allow Gradle import. 
+3. Open the exported in Android Studio. Allow Gradle import. 
 4. Open up the Android manifest in **/Assets/Plugins/Android/AndroidManifest.xml** and replace all instances of `${applicationId}` with your Package Name.
 5. Update your App's build.gradle to include the following changes:
 
@@ -73,7 +73,7 @@ Inside `android`, set the following fields:
 	}
 ```
 
-Finally, in `buildscript`, set the following fields
+In `buildscript`, set the following fields
 ```
 buildscript {
 	repositories {
@@ -90,7 +90,41 @@ buildscript {
 }
 ```
 
-This will add Carnival and it's dependencies. Gradle sync should complete, and you should be able to run your Unity application on a device or emulator. 
+This will add Marigold and its dependencies. Gradle sync should complete, and you should be able to run your Unity application on a device or emulator. 
+
+You should then add an Application class to your app and call `startEngine` with your SDK key in the `onCreate` method.
+You will also need to override the default notification configuration using the example code below. This prevents the Unity
+lifecycle handling and the Marigold SDK in-app message handling from interfering with one another.
+
+Application class:
+```
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Intent
+import com.marigold.sdk.Marigold
+import com.marigold.sdk.NotificationConfig
+import com.unity3d.player.UnityPlayerActivity
+import java.util.Date
+
+class TestApplication: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Marigold().startEngine(this, "<your-sdk-key>")
+        // Override the default intent for notification handling. This is important to
+        // prevent duplicate opens when using combined push/in-app.
+        val intent = Intent(applicationContext, UnityPlayerActivity::class.java)
+        val requestCode = Date().time.toInt()
+        Marigold().setNotificationConfig(NotificationConfig().apply {
+            setDefaultContentIntent(intent, requestCode, PendingIntent.FLAG_UPDATE_CURRENT)
+        })
+    }
+}
+```
+
+Then add the application class to the AndroidManifest:
+```
+<application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:banner="@drawable/app_banner" android:name="<.TestApplication>" />
+```
 
 
 ## Documentation

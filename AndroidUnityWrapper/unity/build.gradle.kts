@@ -21,6 +21,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests.apply {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 tasks.register<Delete>("clearJar") {
@@ -46,4 +51,10 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("com.marigold.sdk:marigold:20.0.0")
     implementation("androidx.core:core-ktx:1.12.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-inline:4.1.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation("androidx.test:core:1.5.0")
 }
