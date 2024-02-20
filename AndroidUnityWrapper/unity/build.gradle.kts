@@ -29,14 +29,14 @@ android {
 }
 
 tasks.register<Delete>("clearJar") {
-    delete("build/libs/MarigoldWrapper.jar")
+    delete("../../Plugins/Android/libs/MarigoldWrapper.jar")
 }
 
 tasks.register<Copy>("makeJar") {
     dependsOn("clearJar", "build")
 
     from("build/intermediates/aar_main_jar/release/")
-    into("build/libs/")
+    into("../../Plugins/Android/libs/")
     include("classes.jar")
     rename ("classes.jar", "MarigoldWrapper.jar")
 }
