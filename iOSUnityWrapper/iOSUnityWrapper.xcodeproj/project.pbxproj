@@ -1,0 +1,437 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA1F13C02B8BDB5A00160B44 /* UnityMessage.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA1F13BF2B8BDB5A00160B44 /* UnityMessage.mm */; };
+		FA1F13C32B8C08F600160B44 /* EngageBySailthruWrapperSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA1F13C22B8C08F600160B44 /* EngageBySailthruWrapperSpec.mm */; };
+		FA2A0F2F2B85A5920013F6CC /* MarigoldWrapperSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F2E2B85A5920013F6CC /* MarigoldWrapperSpec.mm */; };
+		FA2A0F342B85AA1F0013F6CC /* OCMock in Frameworks */ = {isa = PBXBuildFile; productRef = FA2A0F332B85AA1F0013F6CC /* OCMock */; };
+		FA2E61792B868AE1002F1D68 /* EngageBySailthruWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F0A2B8561670013F6CC /* EngageBySailthruWrapper.mm */; };
+		FA2E617A2B868AE4002F1D68 /* MarigoldWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F0B2B8561670013F6CC /* MarigoldWrapper.mm */; };
+		FA2E617B2B868AE8002F1D68 /* UnitySender.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F1E2B858E840013F6CC /* UnitySender.mm */; };
+		FA2E617F2B868CC4002F1D68 /* Marigold in Frameworks */ = {isa = PBXBuildFile; productRef = FA2E617E2B868CC4002F1D68 /* Marigold */; };
+		FA2E61812B868CD0002F1D68 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA2A0F162B858D650013F6CC /* CoreLocation.framework */; };
+		FA2E61822B868CD0002F1D68 /* CoreLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA2A0F162B858D650013F6CC /* CoreLocation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FA2E61862B86CC51002F1D68 /* MessageStreamWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2E61852B86CC51002F1D68 /* MessageStreamWrapper.mm */; };
+		FA2E61882B86E655002F1D68 /* MessageStreamWrapperSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2E61872B86E655002F1D68 /* MessageStreamWrapperSpec.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FA2E61832B868CD0002F1D68 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FA2E61822B868CD0002F1D68 /* CoreLocation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FA1F13BE2B8BDB5A00160B44 /* UnityMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnityMessage.h; sourceTree = "<group>"; };
+		FA1F13BF2B8BDB5A00160B44 /* UnityMessage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UnityMessage.mm; sourceTree = "<group>"; };
+		FA1F13C12B8C07C500160B44 /* EngageBySailthruWrapper+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EngageBySailthruWrapper+Private.h"; sourceTree = "<group>"; };
+		FA1F13C22B8C08F600160B44 /* EngageBySailthruWrapperSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EngageBySailthruWrapperSpec.mm; sourceTree = "<group>"; };
+		FA2A0EF92B8561390013F6CC /* iOSUnityWrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSUnityWrapperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA2A0F092B8561670013F6CC /* EngageBySailthruWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EngageBySailthruWrapper.h; path = ../../Plugins/iOS/EngageBySailthruWrapper.h; sourceTree = "<group>"; };
+		FA2A0F0A2B8561670013F6CC /* EngageBySailthruWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = EngageBySailthruWrapper.mm; path = ../../Plugins/iOS/EngageBySailthruWrapper.mm; sourceTree = "<group>"; };
+		FA2A0F0B2B8561670013F6CC /* MarigoldWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MarigoldWrapper.mm; path = ../../Plugins/iOS/MarigoldWrapper.mm; sourceTree = "<group>"; };
+		FA2A0F0C2B8561670013F6CC /* MarigoldWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MarigoldWrapper.h; path = ../../Plugins/iOS/MarigoldWrapper.h; sourceTree = "<group>"; };
+		FA2A0F142B857EAF0013F6CC /* GlobalHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalHeader.pch; sourceTree = "<group>"; };
+		FA2A0F162B858D650013F6CC /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		FA2A0F1D2B858E840013F6CC /* UnitySender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnitySender.h; sourceTree = "<group>"; };
+		FA2A0F1E2B858E840013F6CC /* UnitySender.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UnitySender.mm; sourceTree = "<group>"; };
+		FA2A0F2E2B85A5920013F6CC /* MarigoldWrapperSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MarigoldWrapperSpec.mm; sourceTree = "<group>"; };
+		FA2A0F312B85A6CE0013F6CC /* MarigoldWrapper+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MarigoldWrapper+Private.h"; sourceTree = "<group>"; };
+		FA2E61842B86CC51002F1D68 /* MessageStreamWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MessageStreamWrapper.h; path = ../../Plugins/iOS/MessageStreamWrapper.h; sourceTree = "<group>"; };
+		FA2E61852B86CC51002F1D68 /* MessageStreamWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = MessageStreamWrapper.mm; path = ../../Plugins/iOS/MessageStreamWrapper.mm; sourceTree = "<group>"; };
+		FA2E61872B86E655002F1D68 /* MessageStreamWrapperSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MessageStreamWrapperSpec.mm; sourceTree = "<group>"; };
+		FA2E61892B86E71A002F1D68 /* MessageStreamWrapper+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MessageStreamWrapper+Private.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FA2A0EF62B8561390013F6CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA2E61812B868CD0002F1D68 /* CoreLocation.framework in Frameworks */,
+				FA2A0F342B85AA1F0013F6CC /* OCMock in Frameworks */,
+				FA2E617F2B868CC4002F1D68 /* Marigold in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FA2A0EE72B8561390013F6CC = {
+			isa = PBXGroup;
+			children = (
+				FA2A0EF32B8561390013F6CC /* iOSUnityWrapper */,
+				FA2A0EFD2B8561390013F6CC /* iOSUnityWrapperTests */,
+				FA2A0EF22B8561390013F6CC /* Products */,
+				FA2A0F152B858D650013F6CC /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		FA2A0EF22B8561390013F6CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA2A0EF92B8561390013F6CC /* iOSUnityWrapperTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA2A0EF32B8561390013F6CC /* iOSUnityWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				FA2A0F0C2B8561670013F6CC /* MarigoldWrapper.h */,
+				FA2A0F0B2B8561670013F6CC /* MarigoldWrapper.mm */,
+				FA2E61842B86CC51002F1D68 /* MessageStreamWrapper.h */,
+				FA2E61852B86CC51002F1D68 /* MessageStreamWrapper.mm */,
+				FA2A0F092B8561670013F6CC /* EngageBySailthruWrapper.h */,
+				FA2A0F0A2B8561670013F6CC /* EngageBySailthruWrapper.mm */,
+			);
+			path = iOSUnityWrapper;
+			sourceTree = "<group>";
+		};
+		FA2A0EFD2B8561390013F6CC /* iOSUnityWrapperTests */ = {
+			isa = PBXGroup;
+			children = (
+				FA2A0F2E2B85A5920013F6CC /* MarigoldWrapperSpec.mm */,
+				FA2E61872B86E655002F1D68 /* MessageStreamWrapperSpec.mm */,
+				FA1F13C22B8C08F600160B44 /* EngageBySailthruWrapperSpec.mm */,
+				FA2A0F1D2B858E840013F6CC /* UnitySender.h */,
+				FA2A0F1E2B858E840013F6CC /* UnitySender.mm */,
+				FA2A0F142B857EAF0013F6CC /* GlobalHeader.pch */,
+				FA2A0F312B85A6CE0013F6CC /* MarigoldWrapper+Private.h */,
+				FA2E61892B86E71A002F1D68 /* MessageStreamWrapper+Private.h */,
+				FA1F13C12B8C07C500160B44 /* EngageBySailthruWrapper+Private.h */,
+				FA1F13BE2B8BDB5A00160B44 /* UnityMessage.h */,
+				FA1F13BF2B8BDB5A00160B44 /* UnityMessage.mm */,
+			);
+			path = iOSUnityWrapperTests;
+			sourceTree = "<group>";
+		};
+		FA2A0F152B858D650013F6CC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FA2A0F162B858D650013F6CC /* CoreLocation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FA2A0EF82B8561390013F6CC /* iOSUnityWrapperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA2A0F062B8561390013F6CC /* Build configuration list for PBXNativeTarget "iOSUnityWrapperTests" */;
+			buildPhases = (
+				FA2A0EF52B8561390013F6CC /* Sources */,
+				FA2A0EF62B8561390013F6CC /* Frameworks */,
+				FA2A0EF72B8561390013F6CC /* Resources */,
+				FA2E61832B868CD0002F1D68 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iOSUnityWrapperTests;
+			packageProductDependencies = (
+				FA2A0F332B85AA1F0013F6CC /* OCMock */,
+				FA2E617E2B868CC4002F1D68 /* Marigold */,
+			);
+			productName = iOSUnityWrapperTests;
+			productReference = FA2A0EF92B8561390013F6CC /* iOSUnityWrapperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA2A0EE82B8561390013F6CC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					FA2A0EF82B8561390013F6CC = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+				};
+			};
+			buildConfigurationList = FA2A0EEB2B8561390013F6CC /* Build configuration list for PBXProject "iOSUnityWrapper" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FA2A0EE72B8561390013F6CC;
+			packageReferences = (
+				FA2A0F112B8561960013F6CC /* XCRemoteSwiftPackageReference "sailthru-mobile-ios-sdk" */,
+				FA2A0F322B85AA1F0013F6CC /* XCRemoteSwiftPackageReference "ocmock" */,
+			);
+			productRefGroup = FA2A0EF22B8561390013F6CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FA2A0EF82B8561390013F6CC /* iOSUnityWrapperTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FA2A0EF72B8561390013F6CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA2A0EF52B8561390013F6CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA1F13C02B8BDB5A00160B44 /* UnityMessage.mm in Sources */,
+				FA2E617B2B868AE8002F1D68 /* UnitySender.mm in Sources */,
+				FA1F13C32B8C08F600160B44 /* EngageBySailthruWrapperSpec.mm in Sources */,
+				FA2A0F2F2B85A5920013F6CC /* MarigoldWrapperSpec.mm in Sources */,
+				FA2E61882B86E655002F1D68 /* MessageStreamWrapperSpec.mm in Sources */,
+				FA2E61792B868AE1002F1D68 /* EngageBySailthruWrapper.mm in Sources */,
+				FA2E617A2B868AE4002F1D68 /* MarigoldWrapper.mm in Sources */,
+				FA2E61862B86CC51002F1D68 /* MessageStreamWrapper.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FA2A0F012B8561390013F6CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		FA2A0F022B8561390013F6CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		FA2A0F072B8561390013F6CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREFIX_HEADER = iOSUnityWrapperTests/GlobalHeader.pch;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marigold.sdk.iOSUnityWrapperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSUnityWrapperTests/iOSUnityWrapper-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FA2A0F082B8561390013F6CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREFIX_HEADER = iOSUnityWrapperTests/GlobalHeader.pch;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marigold.sdk.iOSUnityWrapperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSUnityWrapperTests/iOSUnityWrapper-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FA2A0EEB2B8561390013F6CC /* Build configuration list for PBXProject "iOSUnityWrapper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA2A0F012B8561390013F6CC /* Debug */,
+				FA2A0F022B8561390013F6CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA2A0F062B8561390013F6CC /* Build configuration list for PBXNativeTarget "iOSUnityWrapperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA2A0F072B8561390013F6CC /* Debug */,
+				FA2A0F082B8561390013F6CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FA2A0F112B8561960013F6CC /* XCRemoteSwiftPackageReference "sailthru-mobile-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sailthru/sailthru-mobile-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.0;
+			};
+		};
+		FA2A0F322B85AA1F0013F6CC /* XCRemoteSwiftPackageReference "ocmock" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/erikdoe/ocmock";
+			requirement = {
+				kind = revision;
+				revision = afd2c6924e8a36cb872bc475248b978f743c6050;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FA2A0F332B85AA1F0013F6CC /* OCMock */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA2A0F322B85AA1F0013F6CC /* XCRemoteSwiftPackageReference "ocmock" */;
+			productName = OCMock;
+		};
+		FA2E617E2B868CC4002F1D68 /* Marigold */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA2A0F112B8561960013F6CC /* XCRemoteSwiftPackageReference "sailthru-mobile-ios-sdk" */;
+			productName = Marigold;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FA2A0EE82B8561390013F6CC /* Project object */;
+}
