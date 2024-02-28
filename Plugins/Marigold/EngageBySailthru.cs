@@ -244,8 +244,17 @@ namespace MarigoldSDK {
 		/// <summary>
 		/// Used only by the underlying unity plugin code. Do not call.
 		/// </summary>
+		public void ReceiveError(string errorDescription) {
+			EngageBySailthruErrorEventArgs args = new EngageBySailthruErrorEventArgs ();
+			args.ErrorDescription = errorDescription;
+			OnErrorEvent.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Used only by the underlying unity plugin code. Do not call.
+		/// </summary>
 		public void ReceiveProfileVars(string profileVarsJSON) {
-			EngageBySailthruProfileVarsReceivedEventArgs args = new EngageBySailthruProfileVarsReceivedEventArgs ();
+			ProfileVarsReceivedEventArgs args = new ProfileVarsReceivedEventArgs ();
 			args.ProfileVars = (JSONClass)JSONClass.Parse(profileVarsJSON);
 			OnProfileVarsReceivedEvent.Invoke(this, args);
 		}
@@ -254,7 +263,7 @@ namespace MarigoldSDK {
 		/// Used only by the underlying unity plugin code. Do not call.
 		/// </summary>
 		public void ReceiveUnwrappedLink(string unwrappedLink) {
-			EngageBySailthruUwrappedLinkReceivedEventArgs args = new EngageBySailthruUwrappedLinkReceivedEventArgs ();
+			UwrappedLinkReceivedEventArgs args = new UwrappedLinkReceivedEventArgs ();
 			args.UnwrappedLink = new Uri(unwrappedLink);
 			OnUnwrappedLinkReceivedEvent.Invoke(this, args);
 		}
@@ -308,15 +317,23 @@ namespace MarigoldSDK {
 		#endregion
 		
 		#region Callbacks
-		public static event EventHandler<EngageBySailthruProfileVarsReceivedEventArgs> OnProfileVarsReceivedEvent;
-		public static event EventHandler<EngageBySailthruUwrappedLinkReceivedEventArgs> OnUnwrappedLinkReceivedEvent;
+		public static event EventHandler<EngageBySailthruErrorEventArgs> OnErrorEvent;
+		public static event EventHandler<ProfileVarsReceivedEventArgs> OnProfileVarsReceivedEvent;
+		public static event EventHandler<UwrappedLinkReceivedEventArgs> OnUnwrappedLinkReceivedEvent;
 		#endregion
+	}
+
+	/// <summary>
+	/// Marigold error event arguments.
+	/// </summary>
+	public class EngageBySailthruErrorEventArgs :EventArgs {
+		public string ErrorDescription { get; set; }
 	}
 
 	/// <summary>
 	/// Marigold messages received event.
 	/// </summary>
-	public class EngageBySailthruProfileVarsReceivedEventArgs :EventArgs {
+	public class ProfileVarsReceivedEventArgs :EventArgs {
 		public JSONClass ProfileVars { get; set; }
 	}
 
@@ -324,7 +341,7 @@ namespace MarigoldSDK {
 	/// <summary>
 	/// Marigold messages received event.
 	/// </summary>
-	public class EngageBySailthruUwrappedLinkReceivedEventArgs :EventArgs {
+	public class UwrappedLinkReceivedEventArgs :EventArgs {
 		public Uri UnwrappedLink { get; set; }
 	}
 

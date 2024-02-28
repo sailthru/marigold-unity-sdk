@@ -14,10 +14,29 @@ public class MarigoldUnityApp : MonoBehaviour {
 		Marigold.Start();
 
 		// Set up Marigold handlers 
-		Marigold.OnErrorEvent += (object sender, ErrorEventArgs e) => {
-			Debug.Log ("Error returned: " + e.ErrorDescription);
+		Marigold.OnErrorEvent += (object sender, MarigoldErrorEventArgs e) => {
+			Debug.Log ("Marigold Error returned: " + e.ErrorDescription);
 		};
-		Marigold.OnMessagesReceivedEvent += (object sender, MessagesReceivedEventArgs e) => {
+		Marigold.OnDeviceIdReceivedEvent += (object sender, DeviceIDReceivedEventArgs e) => {
+			Debug.Log ("DeviceId: " + e.DeviceID);
+		};
+
+		// Set up EngageBySailthru handlers
+		EngageBySailthru.OnErrorEvent += (object sender, EngageBySailthruErrorEventArgs e) => {
+			Debug.Log ("Engage by Sailthru Error returned: " + e.ErrorDescription);
+		};
+		EngageBySailthru.OnProfileVarsReceivedEvent += (object sender, ProfileVarsReceivedEventArgs args) => {
+			Debug.Log ("Profile Vars: " + args.ProfileVars.ToString());
+		};
+		EngageBySailthru.OnUnwrappedLinkReceivedEvent += (object sender, UwrappedLinkReceivedEventArgs args) => {
+			Debug.Log ("Unwrapped Link: " + args.UnwrappedLink.ToString());
+		};
+
+		// Set up MessageStream handlers
+		MessageStream.OnErrorEvent += (object sender, MessageStreamErrorEventArgs e) => {
+			Debug.Log ("Message Stream Error returned: " + e.ErrorDescription);
+		};
+		MessageStream.OnMessagesReceivedEvent += (object sender, MessagesReceivedEventArgs e) => {
 			if (e.messages != null && e.messages.Count > 0) {
 				Message message = e.messages[0];
 				Debug.Log ("First Marigold message");
@@ -28,23 +47,12 @@ public class MarigoldUnityApp : MonoBehaviour {
 				Debug.Log (message.videoURL);
 				Debug.Log (message.type);
 				Debug.Log (message.text);
-				Marigold.RegisterImpression(message, ImpressionType.StreamView); 
+				MessageStream.RegisterImpression(message, ImpressionType.StreamView); 
 			}
 			this.theMessages = e.messages;
 		};
-		Marigold.OnUnreadCountReceivedEvent += (object sender, UnreadCountReceivedEventArgs e) => {
+		MessageStream.OnUnreadCountReceivedEvent += (object sender, UnreadCountReceivedEventArgs e) => {
 			Debug.Log ("Unread Count: " + e.UnreadCount);
-		};
-		Marigold.OnDeviceIdReceivedEvent += (object sender, DeviceIDReceivedEventArgs e) => {
-			Debug.Log ("DeviceId: " + e.DeviceID);
-		};
-
-		// Set up EngageBySailthru handlers
-		EngageBySailthru.OnProfileVarsReceivedEvent += (object sender, EngageBySailthruProfileVarsReceivedEventArgs args) => {
-			Debug.Log ("Profile Vars: " + args.ProfileVars.ToString());
-		};
-		EngageBySailthru.OnUnwrappedLinkReceivedEvent += (object sender, EngageBySailthruUwrappedLinkReceivedEventArgs args) => {
-			Debug.Log ("Unwrapped Link: " + args.UnwrappedLink.ToString());
 		};
 
 
@@ -53,14 +61,15 @@ public class MarigoldUnityApp : MonoBehaviour {
 
 		Marigold.SetInAppNotificationsEnabled(true);
 
-		//Get some messages
-		Marigold.GetMessages();
-
-		//Get the unread count
-		Marigold.UnreadCount();
-
 		// Get the device ID
 		Marigold.DeviceID();
+
+
+		//Get some messages
+		MessageStream.GetMessages();
+
+		//Get the unread count
+		MessageStream.UnreadCount();
 
 
 		// Set user details
@@ -114,10 +123,10 @@ public class MarigoldUnityApp : MonoBehaviour {
 	}
 	public void OnMDClick() {
 		if (this.theMessages == null || this.theMessages.Count > 0) {
-			Marigold.ShowMessageDetail (this.theMessages [0]);
+			MessageStream.ShowMessageDetail (this.theMessages [0]);
 
 			//Not required, but an example of marking a message as read
-			Marigold.MarkMessageAsRead (this.theMessages [0]);
+			MessageStream.MarkMessageAsRead (this.theMessages [0]);
 		} else {
 			Debug.Log ("There are no messages to show");
 		}
