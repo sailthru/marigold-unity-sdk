@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.Location
 import androidx.test.core.app.ApplicationProvider
 import com.marigold.sdk.Marigold
+import com.marigold.sdk.MessageStream
 import com.marigold.sdk.unity.UnitySender.Companion.MARIGOLD_RECEIVE_DEVICE_ID
 import com.marigold.sdk.unity.UnitySender.Companion.MARIGOLD_UNITY
 import com.unity3d.player.UnityPlayer
@@ -22,6 +23,7 @@ import org.mockito.kotlin.capture
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -32,6 +34,8 @@ import java.lang.Error
 class MarigoldWrapperTest {
     @Mock
     private lateinit var marigold: Marigold
+    @Mock
+    private lateinit var messageStream: MessageStream
     @Mock
     private lateinit var unitySender: UnitySender
     @Mock
@@ -55,20 +59,35 @@ class MarigoldWrapperTest {
             whenever(activity.intent).thenReturn(emptyIntent)
         }
         MarigoldWrapper.marigold = marigold
+        MarigoldWrapper.messageStream = messageStream
         MarigoldWrapper.unitySender = unitySender
     }
 
     @After
     fun tearDown() {
         UnityPlayer.currentActivity = null
+        MarigoldWrapper.started = false
     }
 
     @Test
     fun `test start`() {
         doReturn(ApplicationProvider.getApplicationContext()).whenever(activity).applicationContext
         MarigoldWrapper.start()
+        verify(activity).intent
         verify(marigold).addNotificationTappedListener(any())
+        verify(messageStream).setInAppOnClickListener(any())
         verify(marigold).requestNotificationPermission(activity)
+    }
+
+    @Test
+    fun `test start multiple calls`() {
+        doReturn(ApplicationProvider.getApplicationContext()).whenever(activity).applicationContext
+        MarigoldWrapper.start()
+        MarigoldWrapper.start()
+        verify(activity, times(1)).intent
+        verify(marigold, times(1)).addNotificationTappedListener(any())
+        verify(messageStream, times(1)).setInAppOnClickListener(any())
+        verify(marigold, times(1)).requestNotificationPermission(activity)
     }
 
     @Test

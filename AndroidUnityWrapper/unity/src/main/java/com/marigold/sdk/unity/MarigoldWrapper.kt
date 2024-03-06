@@ -27,9 +27,16 @@ object MarigoldWrapper {
     @VisibleForTesting
     internal var marigold = Marigold()
     @VisibleForTesting
+    internal var messageStream = MessageStream()
+    @VisibleForTesting
     internal var unitySender = UnitySender()
+    @VisibleForTesting
+    internal var started = false
 
     fun start() {
+        if (started) return
+        started = true
+
         val activity = UnityPlayer.currentActivity
         setupMessageHandling(activity)
 
@@ -105,7 +112,7 @@ object MarigoldWrapper {
     }
 
     /**
-     * Workaround to prevent duplicated open metrics when launching push with in-app attached.
+     * Workarounds to ensure in-app handling works correctly with Unity activity lifecycle.
      */
     private fun setupMessageHandling(activity: Activity) {
         // Handle app launched
@@ -120,6 +127,11 @@ object MarigoldWrapper {
                     MessageStreamWrapper.showMessageDetail(messageId)
                 }, 1000)
             }
+        }
+
+        // Handle in-app tap
+        messageStream.setInAppOnClickListener { _, message ->
+            MessageStreamWrapper.showMessageDetail(message.messageID)
         }
     }
 
