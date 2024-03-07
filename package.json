@@ -10,5 +10,9 @@
         "Sailthru",
         "iOS",
         "Android"
-    ]
+    ],
+    "author": {
+        "name": "Marigold",
+        "url": "https://meetmarigold.com/"
+    }
 }
