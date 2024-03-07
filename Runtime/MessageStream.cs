@@ -173,10 +173,13 @@ namespace MarigoldSDK {
 				m.messageID = jsonMessagesArray[i]["id"];
 				m.text = jsonMessagesArray[i]["text"];
 				m.URL = jsonMessagesArray[i]["url"];
-				m.videoURL = jsonMessagesArray[i]["videoURL"];
-				m.imageURL = jsonMessagesArray[i]["imageURL"];
-				m.type = (Message.MessageType)jsonMessagesArray[i]["type"].AsInt;
+				m.videoURL = jsonMessagesArray[i]["card_media_url"];
+				m.imageURL = jsonMessagesArray[i]["card_image_url"];
+				m.type = Message.StringToMessageType(jsonMessagesArray[i]["type"]);
 				m.createdAt = jsonMessagesArray[i]["created_at"];
+				m.isRead = jsonMessagesArray[i]["is_read"].AsBool;
+				m.htmlText = jsonMessagesArray[i]["html_text"];
+				m.attributes = jsonMessagesArray[i]["custom"].AsObject;
 				messages.Add(m);
 			}
 
@@ -188,6 +191,8 @@ namespace MarigoldSDK {
 
 		#region Helpers
         
+
+#nullable enable
 		public JSONClass GetJsonForMessage (Message message) {
 			JSONClass jsonObject = new JSONClass();
 			if (message.messageID != null) jsonObject["id"] = message.messageID;
@@ -197,9 +202,15 @@ namespace MarigoldSDK {
 			if (message.URL != null) jsonObject["url"] = message.URL;
 			if (message.videoURL != null) jsonObject["card_media_url"] = message.videoURL;
 			if (message.imageURL != null) jsonObject["card_image_url"] = message.imageURL;
+			string? typeString = Message.MessageTypeToString(message.type);
+			if (typeString != null) jsonObject["type"] = typeString;
+			jsonObject["is_read"].AsBool = message.isRead;
+			if (message.htmlText != null) jsonObject["html_text"] = message.htmlText;
+			if (message.attributes != null) jsonObject["custom"] = message.attributes;
 			jsonObject["notifications"] = new JSONArray();
 			return jsonObject;
 		}
+#nullable disable
 
 		public JSONArray GetJsonForMessages (List<Message> messages) {
 			JSONArray jsonArray = new JSONArray();
@@ -250,21 +261,47 @@ namespace MarigoldSDK {
 		public string UnreadCount { get; set; }
 	}
 
+#nullable enable
 	/// <summary>
 	/// Marigold message class.
 	/// </summary>
 	public class Message {
-		// TODO - compare with native values
-		public string messageID { get; set; }
-		public string title { get; set; }
-		public string text { get; set; }
-		public string URL { get; set; }
-		public string videoURL { get; set; }
-		public string imageURL { get; set; }
-		public string createdAt { get; set; }
-		public MessageType type { get; set; }
-		public enum MessageType {Text, Image, Link, Video, FakePhoneCall, Other};
+		public string? messageID { get; set; }
+		public string? title { get; set; }
+		public string? text { get; set; }
+		public string? createdAt { get; set; }
+		public bool isRead { get; set; }
+		public string? URL { get; set; }
+		public string? videoURL { get; set; }
+		public string? imageURL { get; set; }
+		public string? htmlText { get; set; }
+		public JSONClass? attributes { get; set; }
+		public MessageType? type { get; set; }
+		public enum MessageType {Text, Video, Link, Image, Push};
+
+		public static string? MessageTypeToString(MessageType? type) {
+			return type switch {
+				MessageType.Text => "text_message",
+				MessageType.Video => "video_message",
+				MessageType.Link => "link_message",
+				MessageType.Image => "image_message",
+				MessageType.Push => "push_message",
+				_ => null
+			};
+		}
+
+		public static MessageType? StringToMessageType(string? typeString) {
+			return typeString switch {
+				"text_message" => MessageType.Text,
+				"video_message" => MessageType.Video,
+				"link_message" => MessageType.Link,
+				"image_message" => MessageType.Image,
+				"push_message" => MessageType.Push,
+				_ => null
+			};
+		}
 	}
+#nullable disable
 
 	public enum ImpressionType {InAppNotificationView, StreamView, DetailView};
 }

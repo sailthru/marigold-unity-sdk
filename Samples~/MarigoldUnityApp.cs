@@ -45,10 +45,14 @@ public class MarigoldUnityApp : MonoBehaviour {
 				Debug.Log (message.title);
 				Debug.Log (message.messageID);
 				Debug.Log (message.createdAt);
+				Debug.Log (message.URL);
 				Debug.Log (message.imageURL);
 				Debug.Log (message.videoURL);
 				Debug.Log (message.type);
 				Debug.Log (message.text);
+				Debug.Log (message.isRead);
+				Debug.Log (message.htmlText);
+				Debug.Log (message.attributes);
 				MessageStream messageStream = new MessageStream();
 				messageStream.RegisterImpression(message, ImpressionType.StreamView); 
 			}
