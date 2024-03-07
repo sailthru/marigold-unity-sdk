@@ -13,28 +13,20 @@ Required Tools:
 
 ## Integration Instructions
 
-1. Open your project in the Unity Editor
-2. Import the `Carnival.unitypackage` file and select all files
-3. In the scenes you wish to include Carnival, create an object with the Carnival.cs script attached to it. 
+1. Open your project in the Unity Editor.
+2. Add the Marigold Unity SDK to your project using the Unity Package Manager.
+3. In the scenes you wish to include Marigold, create an object with the Marigold.cs script attached to it. You can also add MessageStream.cs or EngageBySailthru.cs if you need functionality from these scripts.
 
 
 ## iOS Instructions
 
 1. To generate your project for iOS, use the File menu to select Build Settings. Switch to the iOS platform and choose Build.
 2. In the resulting xcode project:
-	* Add the -ObjC linker flag to your Other Linker Flags under Project -> Build Settings.
 	* In Build Phases -> Link Binary With Libraries, check the following frameworks are listed; they must be added if they are missing:
-	 * UIKit 
-	 * Foundation
 	 * CoreLocation
-	 * CoreGraphics 
-	 * AVFoundation
-	 * MediaPlayer
-	 * QuartzCore
 	* Add the Marigold.xcframework to the project in Xcode. It can be obtained through Swift Package Manager, Cocoapods, Carthage or directly from Github. See our [documentation](https://docs.mobile.sailthru.com/docs/ios-integration) for more details.
 	* Add Marigold.xcframework to the Frameworks and Libraries section in Unity-iPhone -> General. You should add the framework to both your app target and the `UnityFramework` target.
 	* Call `startEngine` on the `Marigold` class using your SDK key during the `application:didFinishLaunchingWithOptions:` method which will implemented in the app's `UnityAppController.m` file.
-	* Ensure the `UNITY_USES_REMOTE_NOTIFICATIONS` flag is set to true so your app can handle notifications.
 3. Run your application. 
 
 
@@ -47,47 +39,15 @@ Required Tools:
 
 Delete the first generated line to stop Unity auto-removing the changes. 
 
-To `allProjects > repositories`, add 
+To `repositories`, add 
 ```
-		maven {
-			url "https://github.com/sailthru/maven-repository/raw/master/"
-		}
-
-		google()
-		mavenCentral()
+	maven {
+		url "https://github.com/sailthru/maven-repository/raw/master/"
+	}
 ```
 To `dependencies` add:
 ```
-	implementation 'com.marigold.sdk:marigold:20.0.0'
-```
-
-Inside `android`, set the following fields:
-```
-	compileSdk 34
-	buildToolsVersion = '34.0.0'
-
-	defaultConfig {
-		targetSdk 34
-		applicationId 'com.marigold.sdk.unitytestapp'
-		multiDexEnabled true
-	}
-```
-
-In `buildscript`, set the following fields
-```
-buildscript {
-	repositories {
-		jcenter()
-		google()
-		mavenCentral()
-	}
-
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0'
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
-		classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
-	}
-}
+	implementation 'com.marigold.sdk:marigold:20.1.0'
 ```
 
 This will add Marigold and its dependencies. Gradle sync should complete, and you should be able to run your Unity application on a device or emulator. 
@@ -123,10 +83,10 @@ class TestApplication: Application() {
 
 Then add the application class to the AndroidManifest:
 ```
-<application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:banner="@drawable/app_banner" android:name="<.TestApplication>" />
+<application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:banner="@drawable/app_banner" android:name=".TestApplication" />
 ```
 
 
 ## Documentation
 
-More documentation can be found at [docs.mobile.sailthru.com](docs.mobile.sailthru.com).
+More documentation can be found in our [docs](https://docs.mobile.sailthru.com).

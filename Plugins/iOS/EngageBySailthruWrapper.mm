@@ -17,8 +17,8 @@ static dispatch_once_t onceSharedPredicate = 0;
 
 @interface EngageBySailthruWrapper ()
 /*
- * We need to hold these blocks to make sure they are not released 
- * by ARC before they're executed and the scope variable are destroyed. 
+ * We need to hold these blocks to make sure they are not released
+ * by ARC before they're executed and the scope variable are destroyed.
  * Seems to be unique to the Unity runtime and Objective-C++.
  */
 @property (nonatomic, copy) void (^errorBlock)(NSError *error);
@@ -35,12 +35,20 @@ static dispatch_once_t onceSharedPredicate = 0;
 # pragma mark Page Tracking
 
 void _trackPageview (const char *url, const char *tags) {
-    [[EngageBySailthruWrapper shared] trackPageview:[NSString stringWithUTF8String:url] withTags:nullableString(tags)];
+    NSString *tagsString = nil;
+    if (tags) {
+        tagsString = [NSString stringWithUTF8String:tags];
+    }
+    [[EngageBySailthruWrapper shared] trackPageview:[NSString stringWithUTF8String:url] withTags:tagsString];
 
 }
 
 void _trackImpression (const char *sectionId, const char *urls) {
-    [[EngageBySailthruWrapper shared] trackImpression:[NSString stringWithUTF8String:sectionId] withUrls:nullableString(urls)];
+    NSString *urlsString = nil;
+    if (urls) {
+        urlsString = [NSString stringWithUTF8String:urls];
+    }
+    [[EngageBySailthruWrapper shared] trackImpression:[NSString stringWithUTF8String:sectionId] withUrls:urlsString];
 }
 
 void _trackClick (const char *sectionId, const char *url) {
@@ -50,17 +58,29 @@ void _trackClick (const char *sectionId, const char *url) {
 # pragma mark User Details
 
 void _setUserId(const char *userID) {
-    [[EngageBySailthruWrapper shared] setUserId:nullableString(userID)];
+    NSString *idString = nil;
+    if (userID) {
+        idString = [NSString stringWithUTF8String:userID];
+    }
+    [[EngageBySailthruWrapper shared] setUserId:idString];
 }
 
 void _setUserEmail(const char *userEmail) {
-    [[EngageBySailthruWrapper shared] setUserEmail:nullableString(userEmail)];
+    NSString *emailString = nil;
+    if (userEmail) {
+        emailString = [NSString stringWithUTF8String:userEmail];
+    }
+    [[EngageBySailthruWrapper shared] setUserEmail:emailString];
 }
 
 # pragma mark Custom Events
 
 void _logEvent(const char *event, const char *varsString) {
-    [[EngageBySailthruWrapper shared] logEvent:[NSString stringWithUTF8String:event] withVars:nullableString(varsString)];
+    NSString *vars = nil;
+    if (varsString) {
+        vars = [NSString stringWithUTF8String:varsString];
+    }
+    [[EngageBySailthruWrapper shared] logEvent:[NSString stringWithUTF8String:event] withVars:vars];
 }
 
 # pragma mark Profile Vars
@@ -87,13 +107,6 @@ void _logPurchase(const char *purchaseString) {
 
 void _logAbandonedCart (const char *purchaseString) {
     [[EngageBySailthruWrapper shared] logAbandonedCart:[NSString stringWithUTF8String:purchaseString]];
-}
-
-NSString * nullableString(const char *nullableString) {
-    if (!nullableString) {
-        return nil;
-    }
-    return [NSString stringWithUTF8String:nullableString];
 }
 
 
@@ -129,12 +142,13 @@ NSString * nullableString(const char *nullableString) {
             UnitySendMessage(MAR_ST_ENGAGE_BY_ST, MAR_ST_RECEIVE_ERROR, [[error localizedDescription] UTF8String]);
             return;
         }
-        if (!vars) {
-            vars = @{};
+        NSDictionary *profileVars = vars;
+        if (!profileVars) {
+            profileVars = @{};
         }
         
         NSError *varsError;
-        NSData *varsData = [NSJSONSerialization dataWithJSONObject:(id)vars options:0 error:&varsError];
+        NSData *varsData = [NSJSONSerialization dataWithJSONObject:(id)profileVars options:0 error:&varsError];
         if(varsError) {
             UnitySendMessage(MAR_ST_ENGAGE_BY_ST, MAR_ST_RECEIVE_ERROR, [[varsError localizedDescription] UTF8String]);
             return;
@@ -142,7 +156,7 @@ NSString * nullableString(const char *nullableString) {
         if (!varsData) {
             return;
         }
-        NSString *varsString = [NSString stringWithUTF8String:(const char *)[varsData bytes]];
+        NSString *varsString = [[NSString alloc] initWithData:varsData encoding:NSUTF8StringEncoding];
         UnitySendMessage(MAR_ST_ENGAGE_BY_ST, MAR_ST_RECEIVE_PROFILE_VARS, [varsString UTF8String]);
     };
 }

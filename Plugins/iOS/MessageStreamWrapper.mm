@@ -120,12 +120,13 @@ void _markMessagesAsRead(const char *messagesJSON) {
             return;
         }
         
-        if (!messages) {
-            messages = @[];
+        NSArray *messagesArray = messages;
+        if (!messagesArray) {
+            messagesArray = @[];
         }
         __weak __typeof__(self) strongSelf = weakSelf;
         if (strongSelf) {
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[strongSelf arrayOfMessageDictionariesFromMessageArray:messages] options:0 error:nil];
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[strongSelf arrayOfMessageDictionariesFromMessageArray:messagesArray] options:0 error:nil];
             NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             UnitySendMessage(MAR_STREAM_MESSAGE_STREAM, MAR_STREAM_RECEIVE_MESSAGES, [jsonString UTF8String]);
         }

@@ -106,10 +106,11 @@ void _setGeoIpTrackingDefault (bool enabled) {
         if (error) {
             UnitySendMessage(MAR_MARIGOLD, MAR_RECEIVE_ERROR, [[error localizedDescription] UTF8String]);
         } else {
-            if (!deviceID) {
-                deviceID = @"";
+            NSString *idString = deviceID;
+            if (!idString) {
+                idString = @"";
             }
-            UnitySendMessage(MAR_MARIGOLD, MAR_RECEIVE_DEVICE_ID, [deviceID UTF8String]);
+            UnitySendMessage(MAR_MARIGOLD, MAR_RECEIVE_DEVICE_ID, [idString UTF8String]);
         }
     };
 }
@@ -117,7 +118,7 @@ void _setGeoIpTrackingDefault (bool enabled) {
 #pragma mark Wrapper
 
 - (void)setWrapperDetails {
-    [self.marigold setWrapperName:@"Unity" andVersion:@"1.0.0"];
+    [self.marigold setWrapperName:@"Unity" andVersion:@"2.0.0"];
 }
 
 # pragma mark Location
