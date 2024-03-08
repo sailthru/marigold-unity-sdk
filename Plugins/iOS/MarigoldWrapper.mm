@@ -1,5 +1,7 @@
 #import "MarigoldWrapper.h"
 #import <Marigold/Marigold.h>
+#import <UserNotifications/UserNotifications.h>
+#import <Foundation/Foundation.h>
 
 const char *MAR_MARIGOLD = "Marigold";
 const char *MAR_RECEIVE_ERROR = "ReceiveError";
@@ -70,6 +72,16 @@ void _setGeoIpTrackingEnabled (bool enabled) {
 
 void _setGeoIpTrackingDefault (bool enabled) {
     [[MarigoldWrapper shared] setGeoIpTrackingDefault:enabled];
+}
+
+# pragma mark Notification Permissions
+
+void _requestNotificationPermission() {
+    [[MarigoldWrapper shared] requestNotificationPermission];
+}
+
+void _syncNotificationSettings() {
+    [[MarigoldWrapper shared] syncNotificationSettings];
 }
 
 # pragma mark - Obj-C Methods
@@ -154,6 +166,33 @@ void _setGeoIpTrackingDefault (bool enabled) {
 
 - (void)setGeoIpTrackingDefault:(bool)enabled {
     [self.marigold setGeoIPTrackingDefault:enabled];
+}
+
+#pragma mark Notification Permission
+
+- (void)requestNotificationPermission {
+    UNAuthorizationOptions options = UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound;
+    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
+
+    [self dispatchOnMainQueue:^{
+        if(![[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }
+    }];
+}
+
+- (void)syncNotificationSettings {
+    [self.marigold syncNotificationSettings];
+}
+
+- (void)dispatchOnMainQueue:(dispatch_block_t) block {
+    if (!block) return;
+    
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+    }
 }
 
 @end

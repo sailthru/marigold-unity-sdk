@@ -34,6 +34,12 @@ namespace MarigoldSDK {
 		[DllImport("__Internal")]
 		private static extern void _setGeoIpTrackingDefault (bool enabled);
 
+		[DllImport("__Internal")]
+		private static extern void _requestNotificationPermission ();
+
+		[DllImport("__Internal")]
+		private static extern void _syncNotificationSettings ();
+
 		#endif
 		#endregion
 		
@@ -132,6 +138,33 @@ namespace MarigoldSDK {
 			Marigold._setGeoIpTrackingEnabled (enabled);
 			#elif UNITY_ANDROID
 			CallAndroid("setGeoIpTrackingEnabled", enabled);
+			#endif
+		}
+
+		/// <summary>
+		/// Requests permission to display notifications to the app user. This will display a popup that requires the user's approval before push notifications
+		/// will be displayed. It is recommended that users be taken through a flow to justify the usage of push notifications before presenting the popup
+		/// requesting permission.
+		/// </summary>
+		public void RequestNotificationPermission()
+		{
+			#if UNITY_IOS
+			Marigold._requestNotificationPermission ();
+			#elif UNITY_ANDROID
+			CallAndroid("requestNotificationPermission");
+			#endif
+		}
+
+		/// <summary>
+		/// Synchronises the push notification permissions on the device with the platform. Use this once the user has responded to the
+		/// RequestNotificationPermission prompt to ensure the settings are up to date without having to wait for the app to be restarted.
+		/// </summary>
+		public void SyncNotificationSettings()
+		{
+			#if UNITY_IOS
+			Marigold._syncNotificationSettings ();
+			#elif UNITY_ANDROID
+			CallAndroid("syncNotificationSettings");
 			#endif
 		}
 

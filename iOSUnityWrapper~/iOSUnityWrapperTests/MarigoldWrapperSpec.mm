@@ -87,6 +87,39 @@
     OCMVerify([self.mockMarigold setGeoIPTrackingDefault:YES]);
 }
 
+- (void)testRequestNotificationPermission {
+    id mockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    [OCMStub(ClassMethod([mockCenter currentNotificationCenter])) andReturn:mockCenter];
+    
+    id mockApplication = OCMClassMock([UIApplication class]);
+    [OCMStub(ClassMethod([mockApplication sharedApplication])) andReturn:mockApplication];
+    [OCMStub([mockApplication isRegisteredForRemoteNotifications]) andReturnValue:OCMOCK_VALUE(NO)];
+    
+    _requestNotificationPermission();
+    UNAuthorizationOptions expectedOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound;
+    OCMVerify([mockCenter requestAuthorizationWithOptions:expectedOptions completionHandler:[OCMArg any]]);
+    OCMVerify([mockApplication registerForRemoteNotifications]);
+}
+
+- (void)testRequestNotificationPermissionAlreadyRegistered {
+    id mockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    [OCMStub(ClassMethod([mockCenter currentNotificationCenter])) andReturn:mockCenter];
+    
+    id mockApplication = OCMClassMock([UIApplication class]);
+    [OCMStub(ClassMethod([mockApplication sharedApplication])) andReturn:mockApplication];
+    [OCMStub([mockApplication isRegisteredForRemoteNotifications]) andReturnValue:OCMOCK_VALUE(YES)];
+    
+    _requestNotificationPermission();
+    UNAuthorizationOptions expectedOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound;
+    OCMVerify([mockCenter requestAuthorizationWithOptions:expectedOptions completionHandler:[OCMArg any]]);
+    OCMVerify(never(), [mockApplication registerForRemoteNotifications]);
+}
+
+- (void)testSyncNotificationSettings {
+    _syncNotificationSettings();
+    OCMVerify([self.mockMarigold syncNotificationSettings]);
+}
+
 - (void)testErrorBlockWithNil {
     [MarigoldWrapper shared].errorBlock(nil);
     XCTAssertEqual(0, [[UnitySender shared].messages count]);

@@ -76,7 +76,6 @@ class MarigoldWrapperTest {
         verify(activity).intent
         verify(marigold).addNotificationTappedListener(any())
         verify(messageStream).setInAppOnClickListener(any())
-        verify(marigold).requestNotificationPermission(activity)
     }
 
     @Test
@@ -87,7 +86,6 @@ class MarigoldWrapperTest {
         verify(activity, times(1)).intent
         verify(marigold, times(1)).addNotificationTappedListener(any())
         verify(messageStream, times(1)).setInAppOnClickListener(any())
-        verify(marigold, times(1)).requestNotificationPermission(activity)
     }
 
     @Test
@@ -162,5 +160,17 @@ class MarigoldWrapperTest {
     fun `test setGeoIpTrackingDefault`() {
         MarigoldWrapper.setGeoIpTrackingDefault(true)
         verify(marigold).setGeoIpTrackingDefault(true)
+    }
+
+    @Test
+    fun `test requestNotificationPermission`() {
+        MarigoldWrapper.requestNotificationPermission()
+        verify(marigold).requestNotificationPermission(activity)
+    }
+
+    @Test
+    fun `test syncNotificationSettings`() {
+        MarigoldWrapper.syncNotificationSettings()
+        verify(marigold).syncNotificationSettings()
     }
 }

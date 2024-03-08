@@ -74,6 +74,13 @@ public class MarigoldUnityApp : MonoBehaviour {
 		// Get the device ID
 		marigold.DeviceID();
 
+		// Request notification permission
+		marigold.RequestNotificationPermission();
+
+		// Sync notification settings
+		marigold.SyncNotificationSettings();
+
+		
 
 		MessageStream messageStream = new MessageStream();
 

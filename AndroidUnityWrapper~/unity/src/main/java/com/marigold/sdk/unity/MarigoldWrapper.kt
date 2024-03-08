@@ -49,8 +49,6 @@ object MarigoldWrapper {
         }, IntentFilter(Marigold.ACTION_MESSAGE_COUNT_UPDATE))
 
         setWrapperInfo()
-
-        marigold.requestNotificationPermission(activity)
     }
 
     fun updateLocation(latitude: Double, longitude: Double) {
@@ -90,6 +88,14 @@ object MarigoldWrapper {
 
     fun setGeoIpTrackingDefault(enabled: Boolean) {
         marigold.setGeoIpTrackingDefault(enabled)
+    }
+
+    fun requestNotificationPermission() {
+        marigold.requestNotificationPermission(UnityPlayer.currentActivity)
+    }
+
+    fun syncNotificationSettings() {
+        marigold.syncNotificationSettings()
     }
 
     //region Private
