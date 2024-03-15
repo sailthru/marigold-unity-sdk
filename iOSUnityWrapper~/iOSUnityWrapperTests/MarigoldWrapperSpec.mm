@@ -82,11 +82,6 @@
     OCMVerify([self.mockMarigold setGeoIPTrackingEnabled:YES withResponse:[MarigoldWrapper shared].errorBlock]);
 }
 
-- (void)testSetGeoIpTrackingDefault {
-    _setGeoIpTrackingDefault(true);
-    OCMVerify([self.mockMarigold setGeoIPTrackingDefault:YES]);
-}
-
 - (void)testRequestNotificationPermission {
     id mockCenter = OCMClassMock([UNUserNotificationCenter class]);
     [OCMStub(ClassMethod([mockCenter currentNotificationCenter])) andReturn:mockCenter];

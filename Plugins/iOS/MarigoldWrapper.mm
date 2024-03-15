@@ -70,10 +70,6 @@ void _setGeoIpTrackingEnabled (bool enabled) {
     [[MarigoldWrapper shared] setGeoIpTrackingEnabled:enabled];
 }
 
-void _setGeoIpTrackingDefault (bool enabled) {
-    [[MarigoldWrapper shared] setGeoIpTrackingDefault:enabled];
-}
-
 # pragma mark Notification Permissions
 
 void _requestNotificationPermission() {
@@ -162,10 +158,6 @@ void _syncNotificationSettings() {
 
 - (void)setGeoIpTrackingEnabled:(bool)enabled {
     [self.marigold setGeoIPTrackingEnabled:enabled withResponse:self.errorBlock];
-}
-
-- (void)setGeoIpTrackingDefault:(bool)enabled {
-    [self.marigold setGeoIPTrackingDefault:enabled];
 }
 
 #pragma mark Notification Permission

@@ -15,8 +15,6 @@ extern "C" void _setInAppNotificationsEnabled(bool enabled);
 
 extern "C" void _setGeoIpTrackingEnabled (bool enabled);
 
-extern "C" void _setGeoIpTrackingDefault (bool enabled);
-
 extern "C" void _requestNotificationPermission();
 
 extern "C" void _syncNotificationSettings();

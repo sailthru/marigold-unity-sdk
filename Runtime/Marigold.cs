@@ -32,9 +32,6 @@ namespace MarigoldSDK {
 		private static extern void _setGeoIpTrackingEnabled (bool enabled);
 
 		[DllImport("__Internal")]
-		private static extern void _setGeoIpTrackingDefault (bool enabled);
-
-		[DllImport("__Internal")]
 		private static extern void _requestNotificationPermission ();
 
 		[DllImport("__Internal")]
@@ -121,19 +118,6 @@ namespace MarigoldSDK {
 		/// </summary>
 		/// <param name="enabled">A boolean value indicating whether or not to disable location based on IP Address.</param>
 		public void SetGeoIpTrackingEnabled (bool enabled) {
-			#if UNITY_IOS
-			Marigold._setGeoIpTrackingEnabled (enabled);
-			#elif UNITY_ANDROID
-			CallAndroid("setGeoIpTrackingEnabled", enabled);
-			#endif
-		}
-
-		/// <summary>
-		/// Set whether location tracking based on IP Address will be enabled or disabled by default when a device is created.
-		/// This method must be called before startEngine.
-		/// </summary>
-		/// <param name="enabled">A boolean value indicating whether or not location based on IP Address should be enabled by default.</param>
-		public void SetGeoIpTrackingDefault (bool enabled) {
 			#if UNITY_IOS
 			Marigold._setGeoIpTrackingEnabled (enabled);
 			#elif UNITY_ANDROID

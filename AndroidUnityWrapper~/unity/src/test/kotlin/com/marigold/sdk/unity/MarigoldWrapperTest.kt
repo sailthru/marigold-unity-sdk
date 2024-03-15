@@ -157,12 +157,6 @@ class MarigoldWrapperTest {
     }
 
     @Test
-    fun `test setGeoIpTrackingDefault`() {
-        MarigoldWrapper.setGeoIpTrackingDefault(true)
-        verify(marigold).setGeoIpTrackingDefault(true)
-    }
-
-    @Test
     fun `test requestNotificationPermission`() {
         MarigoldWrapper.requestNotificationPermission()
         verify(marigold).requestNotificationPermission(activity)

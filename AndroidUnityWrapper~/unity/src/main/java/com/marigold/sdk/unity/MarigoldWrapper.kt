@@ -86,10 +86,6 @@ object MarigoldWrapper {
         })
     }
 
-    fun setGeoIpTrackingDefault(enabled: Boolean) {
-        marigold.setGeoIpTrackingDefault(enabled)
-    }
-
     fun requestNotificationPermission() {
         marigold.requestNotificationPermission(UnityPlayer.currentActivity)
     }
