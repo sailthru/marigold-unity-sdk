@@ -15,25 +15,10 @@
 		FA2E617A2B868AE4002F1D68 /* MarigoldWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F0B2B8561670013F6CC /* MarigoldWrapper.mm */; };
 		FA2E617B2B868AE8002F1D68 /* UnitySender.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0F1E2B858E840013F6CC /* UnitySender.mm */; };
 		FA2E617F2B868CC4002F1D68 /* Marigold in Frameworks */ = {isa = PBXBuildFile; productRef = FA2E617E2B868CC4002F1D68 /* Marigold */; };
-		FA2E61812B868CD0002F1D68 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA2A0F162B858D650013F6CC /* CoreLocation.framework */; };
-		FA2E61822B868CD0002F1D68 /* CoreLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA2A0F162B858D650013F6CC /* CoreLocation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FA2E61862B86CC51002F1D68 /* MessageStreamWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2E61852B86CC51002F1D68 /* MessageStreamWrapper.mm */; };
 		FA2E61882B86E655002F1D68 /* MessageStreamWrapperSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA2E61872B86E655002F1D68 /* MessageStreamWrapperSpec.mm */; };
+		FA4244132BA3D4D800000BC9 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4244122BA3D4D800000BC9 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		FA2E61832B868CD0002F1D68 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FA2E61822B868CD0002F1D68 /* CoreLocation.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		FA1F13BE2B8BDB5A00160B44 /* UnityMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnityMessage.h; sourceTree = "<group>"; };
@@ -55,6 +40,7 @@
 		FA2E61852B86CC51002F1D68 /* MessageStreamWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = MessageStreamWrapper.mm; path = ../../Plugins/iOS/MessageStreamWrapper.mm; sourceTree = "<group>"; };
 		FA2E61872B86E655002F1D68 /* MessageStreamWrapperSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MessageStreamWrapperSpec.mm; sourceTree = "<group>"; };
 		FA2E61892B86E71A002F1D68 /* MessageStreamWrapper+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MessageStreamWrapper+Private.h"; sourceTree = "<group>"; };
+		FA4244122BA3D4D800000BC9 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA2E61812B868CD0002F1D68 /* CoreLocation.framework in Frameworks */,
+				FA4244132BA3D4D800000BC9 /* CoreLocation.framework in Frameworks */,
 				FA2A0F342B85AA1F0013F6CC /* OCMock in Frameworks */,
 				FA2E617F2B868CC4002F1D68 /* Marigold in Frameworks */,
 			);
@@ -123,6 +109,7 @@
 		FA2A0F152B858D650013F6CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA4244122BA3D4D800000BC9 /* CoreLocation.framework */,
 				FA2A0F162B858D650013F6CC /* CoreLocation.framework */,
 			);
 			name = Frameworks;
@@ -138,7 +125,6 @@
 				FA2A0EF52B8561390013F6CC /* Sources */,
 				FA2A0EF62B8561390013F6CC /* Frameworks */,
 				FA2A0EF72B8561390013F6CC /* Resources */,
-				FA2E61832B868CD0002F1D68 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -351,9 +337,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GCC_PREFIX_HEADER = iOSUnityWrapperTests/GlobalHeader.pch;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marigold.sdk.iOSUnityWrapperTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "iOSUnityWrapperTests/iOSUnityWrapper-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -368,9 +358,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GCC_PREFIX_HEADER = iOSUnityWrapperTests/GlobalHeader.pch;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.marigold.sdk.iOSUnityWrapperTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "iOSUnityWrapperTests/iOSUnityWrapper-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
