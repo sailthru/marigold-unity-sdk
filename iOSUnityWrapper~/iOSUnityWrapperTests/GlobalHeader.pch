@@ -1,0 +1,14 @@
+//
+//  GlobalHeader.pch
+//  iOSUnityWrapper
+//
+//  Created by Ian Stewart on 21/02/24.
+//
+
+#ifndef GlobalHeader_h
+#define GlobalHeader_h
+
+// Define here in order to allow tests to run
+#import "UnitySender.h"
+
+#endif /* GlobalHeader_h */
