@@ -1,7 +1,7 @@
-# Carnival Unity SDK
+# Marigold Unity SDK
 
 ## Purpose
-This Unity Plugin allows you to communicate with Carnival and show the Carnival mesage stream to enable Rich, Targeted Messaging in your App.
+This Unity Plugin allows you to communicate with Marigold and show the Marigold mesage stream to enable Rich, Targeted Messaging in your App.
 
 ## Setup
 
