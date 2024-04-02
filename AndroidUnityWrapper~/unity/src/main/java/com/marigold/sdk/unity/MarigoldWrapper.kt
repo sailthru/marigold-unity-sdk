@@ -19,10 +19,6 @@ import com.unity3d.player.UnityPlayer
 import org.jetbrains.annotations.VisibleForTesting
 import java.lang.reflect.InvocationTargetException
 
-/**
- * Created by Affian on 10/06/15.
- *
- */
 object MarigoldWrapper {
     @VisibleForTesting
     internal var marigold = Marigold()
