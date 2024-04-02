@@ -1,0 +1,22 @@
+{
+  "pins" : [
+    {
+      "identity" : "ocmock",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/erikdoe/ocmock",
+      "state" : {
+        "revision" : "afd2c6924e8a36cb872bc475248b978f743c6050"
+      }
+    },
+    {
+      "identity" : "sailthru-mobile-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sailthru/sailthru-mobile-ios-sdk",
+      "state" : {
+        "revision" : "4d6c5dfaff08220ba544007d34768ed68220ef4c",
+        "version" : "15.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}
