@@ -115,7 +115,6 @@ class MarigoldWrapperTest {
         verify(marigold).getDeviceId(capture(marigoldStringHandlerCaptor))
 
         val handler = marigoldStringHandlerCaptor.value
-
         handler.onFailure(error)
 
         verify(unitySender).sendErrorMessage(MARIGOLD_UNITY, error)
@@ -150,7 +149,6 @@ class MarigoldWrapperTest {
         verify(marigold).setGeoIpTrackingEnabled(eq(true), capture(marigoldVoidHandlerCaptor))
 
         val handler = marigoldVoidHandlerCaptor.value
-
         handler.onFailure(error)
 
         verify(unitySender).sendErrorMessage(MARIGOLD_UNITY, error)
