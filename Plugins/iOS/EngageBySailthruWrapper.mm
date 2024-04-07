@@ -83,6 +83,10 @@ void _logEvent(const char *event, const char *varsString) {
     [[EngageBySailthruWrapper shared] logEvent:[NSString stringWithUTF8String:event] withVars:vars];
 }
 
+void _clearEvents() {
+    [[EngageBySailthruWrapper shared] clearEvents];
+}
+
 # pragma mark Profile Vars
 
 void _setProfileVars (const char *varsString) {
@@ -245,6 +249,10 @@ void _logAbandonedCart (const char *purchaseString) {
         }
     }
     [[self engageBySailthru] logEvent:event withVars:vars];
+}
+
+- (void)clearEvents {
+    [[self engageBySailthru] clearEventsWithResponse:self.errorBlock];
 }
 
 # pragma mark Profile Vars

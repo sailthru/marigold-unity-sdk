@@ -46,6 +46,8 @@ class MessageStreamWrapperTest {
     @Captor
     private lateinit var messageStreamIntHandlerCaptor: ArgumentCaptor<MessageStream.MessageStreamHandler<Int>>
     @Captor
+    private lateinit var messageStreamVoidHandlerCaptor: ArgumentCaptor<MessageStream.MessageStreamHandler<Void?>>
+    @Captor
     private lateinit var messagesHandlerCaptor: ArgumentCaptor<MessageStream.MessagesHandler>
     @Captor
     private lateinit var messageDeletedHandlerCaptor: ArgumentCaptor<MessageStream.MessageDeletedHandler>
@@ -201,6 +203,28 @@ class MessageStreamWrapperTest {
         assertEquals("test", message.title)
 
         val handler = messageDeletedHandlerCaptor.value
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(MESSAGE_STREAM_UNITY, error)
+    }
+
+    @Test
+    fun `test clearMessages with success response`() {
+        MessageStreamWrapper.clearMessages()
+        verify(messageStream).clearMessages(capture(messageStreamVoidHandlerCaptor))
+
+        val handler = messageStreamVoidHandlerCaptor.value
+        handler.onSuccess(null)
+
+        verifyNoInteractions(unitySender)
+    }
+
+    @Test
+    fun `test clearMessages with error response`() {
+        MessageStreamWrapper.clearMessages()
+        verify(messageStream).clearMessages(capture(messageStreamVoidHandlerCaptor))
+
+        val handler = messageStreamVoidHandlerCaptor.value
         handler.onFailure(error)
 
         verify(unitySender).sendErrorMessage(MESSAGE_STREAM_UNITY, error)

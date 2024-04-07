@@ -310,6 +310,28 @@ class EngageBySailthruWrapperTest {
     }
 
     @Test
+    fun `test clearEvents with success response`() {
+        EngageBySailthruWrapper.clearEvents()
+        verify(engageBySailthru).clearEvents(capture(marigoldVoidHandlerCaptor))
+
+        val handler = marigoldVoidHandlerCaptor.value
+        handler.onSuccess(null)
+
+        verifyNoInteractions(unitySender)
+    }
+
+    @Test
+    fun `test clearEvents with error response`() {
+        EngageBySailthruWrapper.clearEvents()
+        verify(engageBySailthru).clearEvents(capture(marigoldVoidHandlerCaptor))
+
+        val handler = marigoldVoidHandlerCaptor.value
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(ENGAGE_ST_UNITY, error)
+    }
+
+    @Test
     fun `test setProfileVars with success response`() {
         EngageBySailthruWrapper.setProfileVars(jsonString)
         verify(engageBySailthru).setProfileVars(capture(jsonCaptor), capture(marigoldVoidHandlerCaptor))

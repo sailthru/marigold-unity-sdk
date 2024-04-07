@@ -33,6 +33,9 @@ namespace MarigoldSDK {
 		[DllImport("__Internal")]
 		private static extern void _logEvent (string value, string? varsString);
 	#nullable disable
+		
+		[DllImport("__Internal")]
+		private static extern void _clearEvents ();
 
 		[DllImport("__Internal")]
 		private static extern void _setProfileVars (string varsString);
@@ -151,6 +154,17 @@ namespace MarigoldSDK {
 			EngageBySailthru._logEvent (value, vars.ToString());
 			#elif UNITY_ANDROID
 			CallAndroid("logEvent", value, vars.ToString());
+			#endif
+		}
+
+		/// <summary>
+		/// Clear the custom events from the device data.
+		/// </summary>
+		public void ClearEvents() {
+			#if UNITY_IOS
+			EngageBySailthru._clearEvents ();
+			#elif UNITY_ANDROID
+			CallAndroid("clearEvents");
 			#endif
 		}
 		

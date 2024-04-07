@@ -111,6 +111,15 @@ object EngageBySailthruWrapper {
         val vars = getVarsJson(varsString) ?: return
         getEngageBySailthru()?.logEvent(value, vars)
     }
+    
+    fun clearEvents() {
+        getEngageBySailthru()?.clearEvents(object : Marigold.MarigoldHandler<Void?> {
+            override fun onSuccess(value: Void?) {}
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
+            }
+        })
+    }
 
     fun setProfileVars(varsString: String) {
         val vars = getVarsJson(varsString) ?: return

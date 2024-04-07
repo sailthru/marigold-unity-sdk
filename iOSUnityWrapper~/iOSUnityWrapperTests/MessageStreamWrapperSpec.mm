@@ -112,6 +112,11 @@ const char *invalidMessageJson = "{]";
     [self checkJsonError];
 }
 
+- (void)testClearMessages {
+    _clearMessages();
+    OCMVerify([self.mockMessageStream clearMessagesWithResponse:[MessageStreamWrapper shared].errorBlock]);
+}
+
 - (void)testMarkMessageAsRead {
     _markMessageAsRead(messageJson);
     OCMVerify([self.mockMessageStream markMessageAsRead:[OCMArg checkWithSelector:@selector(checkMessage:) onObject:self] withResponse:[MessageStreamWrapper shared].errorBlock]);

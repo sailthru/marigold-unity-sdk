@@ -15,6 +15,8 @@ extern "C" void _registerImpression(const char *messageJSON, int impressionType)
 
 extern "C" void _removeMessage(const char *messageJSON);
 
+extern "C" void _clearMessages();
+
 extern "C" void _markMessageAsRead(const char *messageJSON);
 
 extern "C" void _markMessagesAsRead(const char *messagesJSON);

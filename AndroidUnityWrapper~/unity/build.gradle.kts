@@ -49,7 +49,7 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("com.marigold.sdk:marigold:20.1.0")
+    implementation("com.marigold.sdk:marigold:20.2.0")
     implementation("androidx.core:core-ktx:1.12.0")
 
     testImplementation("junit:junit:4.13.2")

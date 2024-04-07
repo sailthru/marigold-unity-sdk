@@ -84,6 +84,15 @@ object MessageStreamWrapper {
         })
     }
 
+    fun clearMessages() {
+        messageStream.clearMessages(object : MessageStream.MessageStreamHandler<Void?> {
+            override fun onSuccess(value: Void?) {}
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(MESSAGE_STREAM_UNITY, error)
+            }
+        })
+    }
+
     fun markMessageAsRead(messageString: String) {
         val message = getMessage(messageString) ?: return
         messageStream.setMessageRead(message, object : MessageStream.MessagesReadHandler {

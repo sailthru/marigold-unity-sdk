@@ -65,6 +65,10 @@ void _removeMessage(const char *messageJSON) {
     [[MessageStreamWrapper shared] removeMessage:[NSString stringWithUTF8String:messageJSON]];
 }
 
+void _clearMessages() {
+    [[MessageStreamWrapper shared] clearMessages];
+}
+
 # pragma mark Mark As Read
 
 void _markMessageAsRead(const char *messageJSON) {
@@ -191,6 +195,10 @@ void _markMessagesAsRead(const char *messagesJSON) {
     if (message) {
         [self.messageStream removeMessage:message withResponse:self.errorBlock];
     }
+}
+
+- (void)clearMessages {
+    [self.messageStream clearMessagesWithResponse:self.errorBlock];
 }
 
 # pragma mark Mark As Read
