@@ -13,8 +13,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sailthru/sailthru-mobile-ios-sdk",
       "state" : {
-        "revision" : "4d6c5dfaff08220ba544007d34768ed68220ef4c",
-        "version" : "15.0.0"
+        "revision" : "2e71269a5ce5c75009f2002873af5fa31bd10ce4",
+        "version" : "15.1.0"
       }
     }
   ],

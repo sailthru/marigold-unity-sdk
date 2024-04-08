@@ -129,6 +129,11 @@ const char *purchaseJson = "{\"items\":[{\"qty\":2,\"title\":\"item name\",\"pri
     [self checkJsonError];
 }
 
+- (void)testClearEvents {
+    _clearEvents();
+    OCMVerify([self.mockEngageBySt clearEventsWithResponse:[EngageBySailthruWrapper shared].errorBlock]);
+}
+
 - (void)testSetProfileVars {
     _setProfileVars(varsJson);
     NSDictionary *expectedVars = @{@"hi":@"there"};

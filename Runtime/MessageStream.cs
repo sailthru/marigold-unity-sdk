@@ -32,6 +32,9 @@ namespace MarigoldSDK {
 		private static extern void _removeMessage (string messageJSON);
 
 		[DllImport("__Internal")]
+		private static extern void _clearMessages ();
+
+		[DllImport("__Internal")]
 		private static extern void _markMessageAsRead (string messageJSON);
 
 		[DllImport("__Internal")]
@@ -117,6 +120,17 @@ namespace MarigoldSDK {
 			MessageStream._removeMessage(messageString);
 			#elif UNITY_ANDROID
 			CallAndroid("removeMessage", messageString);
+			#endif
+		}
+
+		/// <summary>
+		/// Clear the Message Stream for the device.
+		/// </summary>
+		public void ClearMessages() {
+			#if UNITY_IOS
+			MessageStream._clearMessages();
+			#elif UNITY_ANDROID
+			CallAndroid("clearMessages");
 			#endif
 		}
 
