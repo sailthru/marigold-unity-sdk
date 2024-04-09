@@ -1,6 +1,6 @@
 {
     "name": "com.marigold.sdk.unity",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "displayName": "Marigold Unity SDK",
     "description": "This package contains the Marigold Unity SDK, a wrapper SDK around our native iOS and Android SDKs that allows them to be used for Unity development.",
     "unity": "2020.2",
