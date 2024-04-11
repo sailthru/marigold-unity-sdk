@@ -99,7 +99,7 @@ object MarigoldWrapper {
             cArg[1] = String::class.java
             val setWrapperMethod = Marigold.Companion::class.java.getDeclaredMethod("setWrapper", *cArg)
             setWrapperMethod.isAccessible = true
-            setWrapperMethod.invoke(Marigold.Companion, "Unity", "2.1.0")
+            setWrapperMethod.invoke(Marigold.Companion, "Unity", "2.1.1")
         } catch (e: NoSuchMethodException) {
             e.printStackTrace()
         } catch (e: IllegalAccessException) {
