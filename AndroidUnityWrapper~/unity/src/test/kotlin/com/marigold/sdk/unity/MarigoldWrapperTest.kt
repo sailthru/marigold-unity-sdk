@@ -6,8 +6,11 @@ import android.location.Location
 import androidx.test.core.app.ApplicationProvider
 import com.marigold.sdk.Marigold
 import com.marigold.sdk.MessageStream
+import com.marigold.sdk.interfaces.UnreadMessageCountListener
 import com.marigold.sdk.unity.UnitySender.Companion.MARIGOLD_RECEIVE_DEVICE_ID
 import com.marigold.sdk.unity.UnitySender.Companion.MARIGOLD_UNITY
+import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_UNREAD_COUNT
+import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_UNITY
 import com.unity3d.player.UnityPlayer
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -47,6 +50,8 @@ class MarigoldWrapperTest {
     private lateinit var marigoldStringHandlerCaptor: ArgumentCaptor<Marigold.MarigoldHandler<String?>>
     @Captor
     private lateinit var marigoldVoidHandlerCaptor: ArgumentCaptor<Marigold.MarigoldHandler<Void?>>
+    @Captor
+    private lateinit var unreadCountListenerCaptor: ArgumentCaptor<UnreadMessageCountListener>
 
     private val emptyIntent = Intent()
     private val error = Error("Test Error")
@@ -76,6 +81,11 @@ class MarigoldWrapperTest {
         verify(activity).intent
         verify(marigold).addNotificationTappedListener(any())
         verify(messageStream).setInAppOnClickListener(any())
+        verify(messageStream).addUnreadMessageCountListener(capture(unreadCountListenerCaptor))
+
+        val unreadMessageCountListener = unreadCountListenerCaptor.value
+        unreadMessageCountListener.onUnreadMessageCountUpdated(activity, 21)
+        verify(unitySender).sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_UNREAD_COUNT, "21")
     }
 
     @Test
@@ -86,6 +96,7 @@ class MarigoldWrapperTest {
         verify(activity, times(1)).intent
         verify(marigold, times(1)).addNotificationTappedListener(any())
         verify(messageStream, times(1)).setInAppOnClickListener(any())
+        verify(messageStream, times(1)).addUnreadMessageCountListener(any())
     }
 
     @Test

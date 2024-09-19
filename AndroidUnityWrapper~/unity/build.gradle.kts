@@ -4,8 +4,8 @@ plugins {
 }
 
 android {
-    compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    compileSdk = 35
+    buildToolsVersion = "35.0.0"
     namespace = "com.marigold.sdk.unity"
 
     defaultConfig {
@@ -35,7 +35,7 @@ tasks.register<Delete>("clearJar") {
 tasks.register<Copy>("makeJar") {
     dependsOn("clearJar", "build")
 
-    from("build/intermediates/aar_main_jar/release/")
+    from("build/intermediates/aar_main_jar/release/syncReleaseLibJars")
     into("../../Plugins/Android/libs/")
     include("classes.jar")
     rename ("classes.jar", "MarigoldWrapper.jar")
@@ -49,12 +49,12 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("com.marigold.sdk:marigold:20.2.0")
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.marigold.sdk:marigold:23.0.0")
+    implementation("androidx.core:core-ktx:1.13.1")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-inline:4.1.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    testImplementation("org.robolectric:robolectric:4.10.3")
-    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+    testImplementation("org.robolectric:robolectric:4.12.1")
+    testImplementation("androidx.test:core:1.6.1")
 }
