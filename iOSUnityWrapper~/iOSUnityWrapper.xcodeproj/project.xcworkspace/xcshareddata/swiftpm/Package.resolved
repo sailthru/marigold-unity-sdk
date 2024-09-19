@@ -1,4 +1,5 @@
 {
+  "originHash" : "fb75b2c0acc5c11282cd4b22739373accef73b42ce456ae696836c5219dbfb56",
   "pins" : [
     {
       "identity" : "ocmock",
@@ -13,10 +14,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sailthru/sailthru-mobile-ios-sdk",
       "state" : {
-        "revision" : "2e71269a5ce5c75009f2002873af5fa31bd10ce4",
-        "version" : "15.1.0"
+        "revision" : "9103cb2098b51f88ff4050958954c9e1f7328cd7",
+        "version" : "18.0.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

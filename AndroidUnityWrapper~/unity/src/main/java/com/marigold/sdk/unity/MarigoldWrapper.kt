@@ -1,14 +1,9 @@
 package com.marigold.sdk.unity
 
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.marigold.sdk.Marigold
 import com.marigold.sdk.MessageStream
 import com.marigold.sdk.unity.UnitySender.Companion.MARIGOLD_RECEIVE_DEVICE_ID
@@ -36,13 +31,9 @@ object MarigoldWrapper {
         val activity = UnityPlayer.currentActivity
         setupMessageHandling(activity)
 
-        val broadcastManager = LocalBroadcastManager.getInstance(activity)
-        broadcastManager.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val count = intent.getIntExtra(MessageStream.EXTRA_UNREAD_MESSAGE_COUNT, 0)
-                unitySender.sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_UNREAD_COUNT, count.toString())
-            }
-        }, IntentFilter(Marigold.ACTION_MESSAGE_COUNT_UPDATE))
+        messageStream.addUnreadMessageCountListener { _, unreadCount ->
+            unitySender.sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_UNREAD_COUNT, unreadCount.toString())
+        }
 
         setWrapperInfo()
     }
@@ -99,7 +90,7 @@ object MarigoldWrapper {
             cArg[1] = String::class.java
             val setWrapperMethod = Marigold.Companion::class.java.getDeclaredMethod("setWrapper", *cArg)
             setWrapperMethod.isAccessible = true
-            setWrapperMethod.invoke(Marigold.Companion, "Unity", "2.1.1")
+            setWrapperMethod.invoke(Marigold.Companion, "Unity", "3.0.0")
         } catch (e: NoSuchMethodException) {
             e.printStackTrace()
         } catch (e: IllegalAccessException) {
