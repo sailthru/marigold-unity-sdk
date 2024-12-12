@@ -21,6 +21,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
     testOptions {
         unitTests.apply {
             isReturnDefaultValues = true
@@ -49,7 +52,7 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("com.marigold.sdk:marigold:23.0.0")
+    implementation("com.marigold.sdk:marigold:24.0.0")
     implementation("androidx.core:core-ktx:1.13.1")
 
     testImplementation("junit:junit:4.13.2")

@@ -31,6 +31,9 @@ const char *purchaseJson = "{\"items\":[{\"qty\":2,\"title\":\"item name\",\"pri
 
 @implementation EngageBySailthruWrapperSpec
 
+NSDate *date1 = [NSDate now];
+NSDate *date2 = [[NSDate now] dateByAddingTimeInterval:1234];
+
 - (void)setUp {
     id wrapperClassMock = OCMClassMock([EngageBySailthruWrapper class]);
     self.spyEngageStWrapper = OCMPartialMock([EngageBySailthruWrapper shared]);
@@ -208,6 +211,28 @@ const char *purchaseJson = "{\"items\":[{\"qty\":2,\"title\":\"item name\",\"pri
     [[UnitySender shared] checkMessageContainsWithObject:@"EngageBySailthru" method:@"ReceiveError" message:@"test error message"];
 }
 
+- (void)testSetAttributes {
+    NSString *attributesJson = [self createAttributesJsonString];
+    _setAttributes([attributesJson UTF8String]);
+    OCMVerify([self.mockEngageBySt setAttributes:[OCMArg checkWithSelector:@selector(checkAttributes:) onObject:self] withCompletion:[EngageBySailthruWrapper shared].errorBlock]);
+}
+
+- (void)testSetAttributesWithInvalidJson {
+    _setAttributes(invalidJson);
+    OCMVerify(never(), [self.mockEngageBySt setAttributes:[OCMArg any] withCompletion:[OCMArg any]]);
+    [self checkJsonError];
+}
+
+- (void)testRemoveAttribute {
+    _removeAttribute(testString);
+    OCMVerify([self.mockEngageBySt removeAttributeWithKey:@"howdy" withCompletion:[EngageBySailthruWrapper shared].errorBlock]);
+}
+
+- (void)testClearAttributes {
+    _clearAttributes();
+    OCMVerify([self.mockEngageBySt clearAttributesWithCompletion:[EngageBySailthruWrapper shared].errorBlock]);
+}
+
 
 
 #pragma mark Helpers
@@ -217,25 +242,89 @@ const char *purchaseJson = "{\"items\":[{\"qty\":2,\"title\":\"item name\",\"pri
 }
 
 - (BOOL)checkPurchase:(MARPurchase *)purchase {
-    if ([purchase.purchaseItems count] != 1) {
-        return NO;
-    }
+    XCTAssertEqual([purchase.purchaseItems count], 1);
     MARPurchaseItem *purchaseItem = [purchase.purchaseItems firstObject];
-    if (![purchaseItem.quantity isEqualToNumber:@2]) {
-        return NO;
+    XCTAssertEqual([purchaseItem.quantity intValue], 2);
+    XCTAssertEqualObjects(purchaseItem.title, @"item name");
+    XCTAssertEqual([purchaseItem.price intValue], 1234);
+    XCTAssertEqualObjects(purchaseItem.purchaseItemID, @"2345");
+    XCTAssertEqualObjects(purchaseItem.URL, [NSURL URLWithString:@"https://www.sailthru.com"]);
+    return YES;
+}
+
+- (NSString *)createAttributesJsonString {
+    NSDictionary *attributes = @{
+        @"mergeRule": @1,
+        @"attributes": @{
+            @"stringAttr": @{
+                @"type": @"string",
+                @"value": @"testme"
+            },
+            @"stringsAttr": @{
+                @"type": @"stringArray",
+                @"value": @[ @"testme1", @"testme2" ]
+            },
+            @"integerAttr": @{
+                @"type": @"integer",
+                @"value": @45
+            },
+            @"integersAttr": @{
+                @"type": @"integerArray",
+                @"value": @[ @23, @34 ]
+            },
+            @"floatAttr": @{
+                @"type": @"float",
+                @"value": @(1.23)
+            },
+            @"floatsAttr": @{
+                @"type": @"floatArray",
+                @"value": @[ @(2.34f), @(3.45f) ]
+            },
+            @"booleanAttr": @{
+                @"type": @"boolean",
+                @"value": @YES
+            },
+            @"dateAttr": @{
+                @"type": @"date",
+                @"value": [self millisecondLongStringForDate:date1]
+            },
+            @"datesAttr": @{
+                @"type": @"dateArray",
+                @"value": @[ [self millisecondLongStringForDate:date1], [self millisecondLongStringForDate:date2] ]
+            }
+        }
+    };
+    NSError *error;
+    NSData *serialisedAttributes = [NSJSONSerialization dataWithJSONObject:attributes options:0 error:&error];
+    if (error) {
+        throw error;
     }
-    if (![purchaseItem.title isEqualToString:@"item name"]) {
-        return NO;
-    }
-    if (![purchaseItem.price isEqualToNumber:@1234]) {
-        return NO;
-    }
-    if (![purchaseItem.purchaseItemID isEqualToString:@"2345"]) {
-        return NO;
-    }
-    if (![purchaseItem.URL isEqual:[NSURL URLWithString:@"https://www.sailthru.com"]]) {
-        return NO;
-    }
+    return [[NSString alloc] initWithData:serialisedAttributes encoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)millisecondLongStringForDate:(NSDate *)date {
+    return [NSString stringWithFormat:@"%ld", ((long)[date timeIntervalSince1970] * 1000)];
+}
+
+- (BOOL)checkAttributes:(MARAttributes *)attributes {
+    XCTAssertEqualObjects([attributes getString:@"stringAttr"], @"testme");
+    NSArray *strings = [attributes getStrings:@"stringsAttr"];
+    XCTAssertEqualObjects(strings[0], @"testme1");
+    XCTAssertEqualObjects(strings[1], @"testme2");
+    XCTAssertEqual([attributes getInteger:@"integerAttr" defaultValue:0], 45);
+    NSArray *integers = [attributes getIntegers:@"integersAttr"];
+    XCTAssertEqual([integers[0] intValue], 23);
+    XCTAssertEqual([integers[1] intValue], 34);
+    XCTAssertEqualWithAccuracy([attributes getFloat:@"floatAttr" defaultValue:0], 1.23, 0.01);
+    NSArray *floats = [attributes getFloats:@"floatsAttr"];
+    XCTAssertEqualWithAccuracy([floats[0] floatValue], 2.34, 0.01);
+    XCTAssertEqualWithAccuracy([floats[1] floatValue], 3.45, 0.01);
+    XCTAssertTrue([attributes getBool:@"booleanAttr" defaultValue:NO]);
+    NSDate *date = [attributes getDate:@"dateAttr"];
+    XCTAssertEqual(floor([date timeIntervalSince1970]), floor([date1 timeIntervalSince1970]));
+    NSArray *dates = [attributes getDates:@"datesAttr"];
+    XCTAssertEqual(floor([dates[0] timeIntervalSince1970]), floor([date1 timeIntervalSince1970]));
+    XCTAssertEqual(floor([dates[1] timeIntervalSince1970]), floor([date2 timeIntervalSince1970]));
     return YES;
 }
 

@@ -113,6 +113,20 @@ void _logAbandonedCart (const char *purchaseString) {
     [[EngageBySailthruWrapper shared] logAbandonedCart:[NSString stringWithUTF8String:purchaseString]];
 }
 
+# pragma mark Device Attributes
+
+void _setAttributes(const char *attributesString) {
+    [[EngageBySailthruWrapper shared] setAttributes:[NSString stringWithUTF8String:attributesString]];
+}
+
+void _removeAttribute(const char *key) {
+    [[EngageBySailthruWrapper shared] removeAttribute:[NSString stringWithUTF8String:key]];
+}
+
+void _clearAttributes() {
+    [[EngageBySailthruWrapper shared] clearAttributes];
+}
+
 
 # pragma mark - Obj-C Methods
 
@@ -286,7 +300,7 @@ void _logAbandonedCart (const char *purchaseString) {
 - (void)logPurchase:(NSString *)purchaseString {
     MARPurchase *purchase = [self convertStringToPurchase:purchaseString];
     if (!purchase) {
-        return;;
+        return;
     }
     [[self engageBySailthru] logPurchase:purchase withResponse:self.errorBlock];
 }
@@ -294,9 +308,27 @@ void _logAbandonedCart (const char *purchaseString) {
 - (void)logAbandonedCart:(NSString *)purchaseString {
     MARPurchase *purchase = [self convertStringToPurchase:purchaseString];
     if (!purchase) {
-        return;;
+        return;
     }
     [[self engageBySailthru] logAbandonedCart:purchase withResponse:self.errorBlock];
+}
+
+# pragma mark Device Attributes
+
+- (void)setAttributes:(NSString *)attributesString {
+    MARAttributes *attributes = [self convertStringToAttributes:attributesString];
+    if (!attributes) {
+        return;
+    }
+    [[self engageBySailthru] setAttributes:attributes withCompletion:self.errorBlock];
+}
+
+- (void)removeAttribute:(NSString *)key {
+    [[self engageBySailthru] removeAttributeWithKey:key withCompletion:self.errorBlock];
+}
+
+- (void)clearAttributes {
+    [[self engageBySailthru] clearAttributesWithCompletion:self.errorBlock];
 }
 
 # pragma mark Helper Methods
@@ -317,6 +349,85 @@ void _logAbandonedCart (const char *purchaseString) {
         return nil;
     }
     return [[MARPurchase alloc] initWithDictionary:purchaseJson];
+}
+
+- (MARAttributes *)convertStringToAttributes:(NSString *)attributesString {
+    NSDictionary *attributesJson = [self convertStringToJson:attributesString];
+    if (!attributesJson) {
+        return nil;
+    }
+
+    MARAttributes *marAttributes = [MARAttributes new];
+    NSInteger mergeRule = [[attributesJson valueForKey:@"mergeRule"] integerValue];
+    [marAttributes setAttributesMergeRule:(MARAttributesMergeRule)mergeRule];
+
+    NSDictionary *attributes = [attributesJson valueForKey:@"attributes"];
+    [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, NSDictionary *  _Nonnull attribute, BOOL * _Nonnull stop) {
+        NSString *type = [attribute valueForKey:@"type"];
+
+        if ([type isEqualToString:@"string"]) {
+            NSString *value = [attribute valueForKey:@"value"];
+            [marAttributes setString:value forKey:key];
+
+        } else if ([type isEqualToString:@"stringArray"]) {
+            NSArray<NSString *> *value = [attribute valueForKey:@"value"];
+            [marAttributes setStrings:value forKey:key];
+
+        } else if ([type isEqualToString:@"integer"]) {
+            NSNumber *value = [attribute objectForKey:@"value"];
+            [marAttributes setInteger:[value integerValue] forKey:key];
+
+        } else if ([type isEqualToString:@"integerArray"]) {
+            NSArray<NSNumber *> *value = [attribute valueForKey:@"value"];
+            [marAttributes setIntegers:value forKey:key];
+
+        } else if ([type isEqualToString:@"boolean"]) {
+            BOOL value = [[attribute valueForKey:@"value"] boolValue];
+            [marAttributes setBool:value forKey:key];
+
+        } else if ([type isEqualToString:@"float"]) {
+            NSNumber *numberValue = [attribute objectForKey:@"value"];
+            [marAttributes setFloat:[numberValue floatValue] forKey:key];
+
+        } else if ([type isEqualToString:@"floatArray"]) {
+            NSArray<NSNumber *> *value = [attribute objectForKey:@"value"];
+            [marAttributes setFloats:value forKey:key];
+
+        } else if ([type isEqualToString:@"date"]) {
+            NSString *millisecondsValue = [attribute objectForKey:@"value"];
+            NSNumber *value = @([millisecondsValue doubleValue] / 1000);
+
+            if (![value isKindOfClass:[NSNumber class]]) {
+                return;
+            }
+
+            NSDate *date = [NSDate dateWithTimeIntervalSince1970:[value doubleValue]];
+            if (date) {
+                [marAttributes setDate:date forKey:key];
+            } else {
+                return;
+            }
+
+        } else if ([type isEqualToString:@"dateArray"]) {
+            NSArray<NSString *> *value = [attribute objectForKey:@"value"];
+            NSMutableArray<NSDate *> *dates = [[NSMutableArray alloc] init];
+            for (NSString *millisecondsValue in value) {
+                NSNumber *secondsValue = @([millisecondsValue doubleValue] / 1000);
+
+                if (![secondsValue isKindOfClass:[NSNumber class]]) {
+                    continue;
+                }
+
+                NSDate *date = [NSDate dateWithTimeIntervalSince1970:[secondsValue doubleValue]];
+                if (date) {
+                    [dates addObject:date];
+                }
+            }
+
+            [marAttributes setDates:dates forKey:key];
+        }
+    }];
+    return marAttributes;
 }
 
 @end

@@ -4,6 +4,8 @@ import android.net.Uri
 import com.marigold.sdk.EngageBySailthru
 import com.marigold.sdk.EngageBySailthru.TrackHandler
 import com.marigold.sdk.Marigold
+import com.marigold.sdk.enums.MergeRules
+import com.marigold.sdk.model.AttributeMap
 import com.marigold.sdk.model.Purchase
 import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_LINK
 import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_VARS
@@ -17,6 +19,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.Date
 
 @Suppress("unused")
 object EngageBySailthruWrapper {
@@ -181,6 +184,34 @@ object EngageBySailthruWrapper {
         })
     }
 
+    fun setAttributes(attributesString: String) {
+        val attributeMap = getAttributeMap(attributesString) ?: return
+        getEngageBySailthru()?.setAttributes(attributeMap, object : EngageBySailthru.AttributesHandler {
+            override fun onSuccess() {}
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
+            }
+        })
+    }
+
+    fun removeAttribute(key: String) {
+        getEngageBySailthru()?.removeAttribute(key, object : EngageBySailthru.AttributesHandler {
+            override fun onSuccess() {}
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
+            }
+        })
+    }
+
+    fun clearAttributes() {
+        getEngageBySailthru()?.clearAttributes(object : EngageBySailthru.AttributesHandler {
+            override fun onSuccess() {}
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(ENGAGE_ST_UNITY, error)
+            }
+        })
+    }
+
     private fun getVarsJson(varsString: String): JSONObject? = try {
         JSONObject(varsString)
     } catch (e: JSONException) {
@@ -215,6 +246,80 @@ object EngageBySailthruWrapper {
         } catch (e: Exception) {
             unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
             null
+        }
+    }
+
+    fun getAttributeMap(attributesString: String): AttributeMap? = try {
+        val attributeMapJson = JSONObject(attributesString)
+        val attributes = attributeMapJson.getJSONObject("attributes")
+        val attributeMap = AttributeMap()
+        val mergeRule = MergeRules.entries[attributeMapJson.getInt("mergeRule")]
+        attributeMap.setMergeRules(mergeRule)
+        attributes.keys().forEach { key ->
+            val attribute = attributes.getJSONObject(key)
+            convertValue(key, attribute, attributeMap)
+        }
+        attributeMap
+    } catch (e: JSONException) {
+        unitySender.sendErrorMessage(ENGAGE_ST_UNITY, e)
+        null
+    }
+
+    private fun convertValue(key: String, attribute: JSONObject, attributeMap: AttributeMap) {
+        val attributeType = attribute.getString("type")
+        when (attributeType) {
+            "string" -> {
+                attributeMap.putString(key, attribute.getString("value"))
+            }
+            "stringArray" -> {
+                val array: ArrayList<String> = ArrayList()
+                val values = attribute.getJSONArray("value")
+                for (i in 0 until values.length()) {
+                    array.add(values.get(i) as String)
+                }
+                attributeMap.putStringArray(key, array)
+            }
+            "integer" -> {
+                attributeMap.putInt(key, attribute.getInt("value"))
+            }
+            "integerArray" -> {
+                val array: ArrayList<Int> = ArrayList()
+                val values = attribute.getJSONArray("value")
+                for (i in 0 until values.length()) {
+                    val j = values.getInt(i)
+                    array.add(j)
+                }
+                attributeMap.putIntArray(key, array)
+            }
+            "boolean" -> {
+                attributeMap.putBoolean(key, attribute.getBoolean("value"))
+            }
+            "float" -> {
+                attributeMap.putFloat(key, attribute.getDouble("value").toFloat())
+            }
+            "floatArray" -> {
+                val array: ArrayList<Float> = ArrayList()
+                val values = attribute.getJSONArray("value")
+                for (i in 0 until values.length()) {
+                    val value = (values.get(i).toString()).toFloat()
+                    array.add(value)
+                }
+                attributeMap.putFloatArray(key, array)
+            }
+            "date" -> {
+                val value = Date(attribute.getString("value").toLong())
+                attributeMap.putDate(key, value)
+            }
+            "dateArray" -> {
+                val array: ArrayList<Date> = ArrayList()
+                val values = attribute.getJSONArray("value")
+                for (i in 0 until values.length()) {
+                    val dateValue = values.getString(i).toLong()
+                    val date = Date(dateValue)
+                    array.add(date)
+                }
+                attributeMap.putDateArray(key, array)
+            }
         }
     }
 
