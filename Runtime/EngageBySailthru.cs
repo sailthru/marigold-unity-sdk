@@ -52,6 +52,15 @@ namespace MarigoldSDK {
 		[DllImport("__Internal")]
 		private static extern void _logAbandonedCart (string purchaseString);
 
+		[DllImport("__Internal")]
+		private static extern void _setAttributes (string attributeString);
+		
+		[DllImport("__Internal")]
+		private static extern void _removeAttribute (string key);
+
+		[DllImport("__Internal")]
+		private static extern void _clearAttributes ();
+
 		#endif
 		#endregion
 		
@@ -231,6 +240,42 @@ namespace MarigoldSDK {
 			#endif
 		}
 
+		/// <summary>
+		/// Set the device attributes on the device in the Marigold platform.
+		/// </summary>
+		/// <param name="attributeMap">The attributes to set on the device.</param>
+		public void SetAttributes(AttributeMap attributeMap) {
+			string attributeString = GetJsonForDeviceAttributes(attributeMap).ToString();
+			#if UNITY_IOS
+			EngageBySailthru._setAttributes(attributeString);
+			#elif UNITY_ANDROID
+			CallAndroid("setAttributes", attributeString);
+			#endif
+		}
+
+		/// <summary>
+		/// Remove the device attribute for the given key from the device in the Marigold platform.
+		/// </summary>
+		/// <param name="key">The key of the attribute to remove.</param>
+		public void RemoveAttribute(string key) {
+			#if UNITY_IOS
+			EngageBySailthru._removeAttribute(key);
+			#elif UNITY_ANDROID
+			CallAndroid("removeAttribute", key);
+			#endif
+		}
+
+		/// <summary>
+		/// Clear all device attributes from the device in the Marigold platform.
+		/// </summary>
+		public void ClearAttributes() {
+			#if UNITY_IOS
+			EngageBySailthru._clearAttributes();
+			#elif UNITY_ANDROID
+			CallAndroid("clearAttributes");
+			#endif
+		}
+
 		#endregion
 
 		#region Helpers 
@@ -327,6 +372,13 @@ namespace MarigoldSDK {
 			JSONClass jsonObject = new JSONClass();
 			jsonObject["title"] = purchaseAdjustment.title;
 			jsonObject["price"].AsInt = purchaseAdjustment.price;
+			return jsonObject;
+		}
+
+		public JSONClass GetJsonForDeviceAttributes (AttributeMap attributeMap) {
+			JSONClass jsonObject = new JSONClass();
+			jsonObject["mergeRule"].AsInt = (int)attributeMap.mergeRules;
+			jsonObject["attributes"] = attributeMap.attributes;
 			return jsonObject;
 		}
 		
@@ -449,6 +501,219 @@ namespace MarigoldSDK {
 		/// The price of the adjustment being added in cents. Can be positive or negative.
 		/// </summary>
 		public int price { get; set; } = 0;
+	}
+
+    public enum MergeRules {
+		UPDATE,
+		REPLACE
+	}
+
+	public class AttributeMap {
+		private const string AttributeMapKeyType = "type";
+		private const string AttributeMapKeyValue = "value";
+
+		private const string AttributeMapValueString = "string";
+		private const string AttributeMapValueStringArray = "stringArray";
+		private const string AttributeMapValueInteger = "integer";
+		private const string AttributeMapValueIntegerArray = "integerArray";
+		private const string AttributeMapValueFloat = "float";
+		private const string AttributeMapValueFloatArray = "floatArray";
+		private const string AttributeMapValueBoolean = "boolean";
+		private const string AttributeMapValueDate = "date";
+		private const string AttributeMapValueDateArray = "dateArray";
+
+		public MergeRules mergeRules { get; set; } = MergeRules.UPDATE;
+		public JSONClass attributes { get; set; } = new JSONClass();
+
+		public void SetString (string key, string value) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueString);
+			attribute[AttributeMapKeyValue] = value;
+			attributes[key] = attribute;
+		}
+
+		public string? GetString (string key) {
+			JSONClass? attribute = GetAttribute(key, AttributeMapValueString);
+			if (attribute == null) {
+				return null;
+			}
+			return attribute[AttributeMapKeyValue].Value;
+		}
+
+		public void SetStringArray (string key, string[] values) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueStringArray);
+			JSONArray jsonArray = attribute[AttributeMapKeyValue].AsArray;
+			foreach (string value in values) {
+				jsonArray[-1] = value;
+			}
+			attributes[key] = attribute;
+		}
+
+		public string[]? GetStringArray (string key) {
+			JSONArray? jsonArray = GetAttributeArray(key, AttributeMapValueStringArray);
+			if (jsonArray == null) {
+				return null;
+			}
+			string[] array = new string[jsonArray.Count];
+			for (int i = 0; i < jsonArray.Count; i++) {
+				array[i] = jsonArray[i].Value;
+			}
+			return array;
+		}
+
+		public void SetInteger (string key, int value) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueInteger);
+			attribute[AttributeMapKeyValue].AsInt = value;
+			attributes[key] = attribute;
+		}
+
+		public int? GetInteger (string key) {
+			JSONClass? attribute = GetAttribute(key, AttributeMapValueInteger);
+			if (attribute == null) {
+				return null;
+			}
+			return attribute[AttributeMapKeyValue].AsInt;
+		}
+
+		public void SetIntegerArray (string key, int[] values) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueIntegerArray);
+			JSONArray jsonArray = attribute[AttributeMapKeyValue].AsArray;
+			foreach (int value in values) {
+				jsonArray[-1].AsInt = value;
+			}
+			attributes[key] = attribute;
+		}
+
+		public int[]? GetIntegerArray (string key) {
+			JSONArray? jsonArray = GetAttributeArray(key, AttributeMapValueIntegerArray);
+			if (jsonArray == null) {
+				return null;
+			}
+			int[] array = new int[jsonArray.Count];
+			for (int i = 0; i < jsonArray.Count; i++) {
+				array[i] = jsonArray[i].AsInt;
+			}
+
+			return array;
+		}
+
+		public void SetFloat (string key, float value) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueFloat);
+			attribute[AttributeMapKeyValue].AsFloat = value;
+			attributes[key] = attribute;
+		}
+
+		public float? GetFloat (string key) {
+			JSONClass? attribute = GetAttribute(key, AttributeMapValueFloat);
+			if (attribute == null) {
+				return null;
+			}
+			return attribute[AttributeMapKeyValue].AsFloat;
+		}
+
+		public void SetFloatArray (string key, float[] values) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueFloatArray);
+			JSONArray jsonArray = attribute[AttributeMapKeyValue].AsArray;
+			foreach (float value in values) {
+				jsonArray[-1].AsFloat = value;
+			}
+			attributes[key] = attribute;
+		}
+
+		public float[]? GetFloatArray (string key) {
+			JSONArray? jsonArray = GetAttributeArray(key, AttributeMapValueFloatArray);
+			if (jsonArray == null) {
+				return null;
+			}
+			float[] array = new float[jsonArray.Count];
+			for (int i = 0; i < jsonArray.Count; i++) {
+				array[i] = jsonArray[i].AsFloat;
+			}
+
+			return array;
+		}
+
+		public void SetBool (string key, bool value) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueBoolean);
+			attribute[AttributeMapKeyValue].AsBool = value;
+			attributes[key] = attribute;
+		}
+
+		public bool? GetBool (string key) {
+			JSONClass? attribute = GetAttribute(key, AttributeMapValueBoolean);
+			if (attribute == null) {
+				return null;
+			}
+			return attribute[AttributeMapKeyValue].AsBool;
+		}
+
+		public void SetDate (string key, DateTimeOffset value) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueDate);
+			attribute[AttributeMapKeyValue] = value.ToUnixTimeMilliseconds().ToString();
+			attributes[key] = attribute;
+		}
+
+		public DateTimeOffset? GetDate (string key) {
+			JSONClass? attribute = GetAttribute(key, AttributeMapValueDate);
+			if (attribute == null) {
+				return null;
+			}
+			string? value = attribute[AttributeMapKeyValue];
+			if (value == null) {
+				return null;
+			}
+			return DateTimeOffset.FromUnixTimeMilliseconds (long.Parse(value));
+		}
+
+		public void SetDateArray (string key, DateTimeOffset[] values) {
+			JSONClass attribute = CreateAttribute (AttributeMapValueDateArray);
+			JSONArray jsonArray = attribute[AttributeMapKeyValue].AsArray;
+			foreach (DateTimeOffset value in values) {
+				jsonArray[-1] = value.ToUnixTimeMilliseconds().ToString();
+			}
+			attributes[key] = attribute;
+		}
+
+		public DateTimeOffset[]? GetDateArray (string key) {
+			JSONArray? jsonArray = GetAttributeArray(key, AttributeMapValueDateArray);
+			if (jsonArray == null) {
+				return null;
+			}
+			DateTimeOffset[] array = new DateTimeOffset[jsonArray.Count];
+			for (int i = 0; i < jsonArray.Count; i++) {
+				string? value = jsonArray[i];
+				if (value == null) {
+					continue;
+				}
+				array[i] = DateTimeOffset.FromUnixTimeMilliseconds (long.Parse(value));
+			}
+
+			return array;
+		}
+
+		private JSONClass CreateAttribute (string type) {
+			JSONClass attribute = new JSONClass();
+			attribute[AttributeMapKeyType] = type;
+			return attribute;
+		}
+
+		private JSONClass? GetAttribute (string key, string type) {
+			if (attributes[key] == null) {
+				return null;
+			}
+			JSONClass? attribute = attributes[key].AsObject;
+			if (attribute == null || !type.Equals(attribute[AttributeMapKeyType])) {
+				return null;
+			}
+			return attribute;
+		}
+
+		private JSONArray? GetAttributeArray (string key, string type) {
+			JSONClass? attribute = GetAttribute(key, type);
+			if (attribute == null) {
+				return null;
+			}
+			return attribute[AttributeMapKeyValue].AsArray;
+		}
 	}
 	#nullable disable
 }

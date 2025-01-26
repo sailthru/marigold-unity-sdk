@@ -126,7 +126,7 @@ void _syncNotificationSettings() {
 #pragma mark Wrapper
 
 - (void)setWrapperDetails {
-    [self.marigold setWrapperName:@"Unity" andVersion:@"3.0.0"];
+    [self.marigold setWrapperName:@"Unity" andVersion:@"4.0.0"];
 }
 
 # pragma mark Location

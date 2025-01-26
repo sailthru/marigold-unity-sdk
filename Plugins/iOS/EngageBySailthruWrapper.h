@@ -27,4 +27,10 @@ extern "C" void _logPurchase(const char *purchaseString);
 
 extern "C" void _logAbandonedCart(const char *purchaseString);
 
+extern "C" void _setAttributes(const char *attributesString);
+
+extern "C" void _removeAttribute(const char *key);
+
+extern "C" void _clearAttributes();
+
 @end

@@ -3,11 +3,14 @@ package com.marigold.sdk.unity
 import android.net.Uri
 import com.marigold.sdk.EngageBySailthru
 import com.marigold.sdk.Marigold
+import com.marigold.sdk.enums.MergeRules
+import com.marigold.sdk.model.AttributeMap
 import com.marigold.sdk.model.Purchase
 import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_LINK
 import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_RECEIVE_VARS
 import com.marigold.sdk.unity.UnitySender.Companion.ENGAGE_ST_UNITY
 import com.unity3d.player.UnityPlayer
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.After
@@ -34,6 +37,7 @@ import org.robolectric.RobolectricTestRunner
 import java.lang.Error
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class EngageBySailthruWrapperTest {
@@ -42,6 +46,8 @@ class EngageBySailthruWrapperTest {
     @Mock
     private lateinit var unitySender: UnitySender
 
+    @Captor
+    private lateinit var attributesHandlerCaptor: ArgumentCaptor<EngageBySailthru.AttributesHandler>
     @Captor
     private lateinit var trackHandlerCaptor: ArgumentCaptor<EngageBySailthru.TrackHandler>
     @Captor
@@ -54,6 +60,8 @@ class EngageBySailthruWrapperTest {
     private lateinit var jsonCaptor: ArgumentCaptor<JSONObject>
     @Captor
     private lateinit var purchaseCaptor: ArgumentCaptor<Purchase>
+    @Captor
+    private lateinit var attributeMapCaptor: ArgumentCaptor<AttributeMap>
 
     private val error = Error("Test Error")
     private val urlString = "https://www.sailthru.com"
@@ -65,6 +73,9 @@ class EngageBySailthruWrapperTest {
     private val stLinkString = "https://link.varickandvandam.com/click/5afcdea395a7a1540e04604d/aHR0cHM6Ly92YXJpY2thbmR2YW5kYW0uY29tL3Byb2R1Y3RzLzEwODgzNTg/5a7cbd790aea1153738b60f3B81a4ee8d"
     private val stLinkUnwrappedString = "https://varickandvandam.com/products/1088358"
     private val purchaseJsonString = "{\"items\":[{\"qty\":2,\"title\":\"item name\",\"price\":1234,\"id\":\"2345\",\"url\":\"https://www.sailthru.com\"}]}"
+    private val date1 = Date()
+    private val date2 = Date().apply { time = time + 1234 }
+    
 
     @Before
     fun setup() {
@@ -534,5 +545,151 @@ class EngageBySailthruWrapperTest {
 
         verify(unitySender).sendErrorMessage(eq(ENGAGE_ST_UNITY), capture(throwableCaptor))
         assertTrue(throwableCaptor.value is JSONException)
+    }
+
+    @Test
+    fun `test setAttributes with success response`() {
+        val attributesJsonString = createAttributesJsonString()
+        EngageBySailthruWrapper.setAttributes(attributesJsonString)
+        verify(engageBySailthru).setAttributes(capture(attributeMapCaptor), capture(attributesHandlerCaptor))
+
+        val attributeMap = attributeMapCaptor.value
+        assertEquals(MergeRules.RULE_REPLACE, attributeMap.getMergeRules())
+        assertEquals("testme", attributeMap.getString("stringAttr"))
+        assertEquals(arrayListOf("testme1", "testme2"), attributeMap.getStringArray("stringsAttr"))
+        assertEquals(45, attributeMap.getInt("integerAttr", 0))
+        assertEquals(arrayListOf(23, 34), attributeMap.getIntArray("integersAttr"))
+        assertEquals(1.23f, attributeMap.getFloat("floatAttr", 0f))
+        assertEquals(arrayListOf(2.34f, 3.45f), attributeMap.getFloatArray("floatsAttr"))
+        assertTrue(attributeMap.getBoolean("booleanAttr", false))
+        assertEquals(date1, attributeMap.getDate("dateAttr"))
+        assertEquals(arrayListOf(date1, date2), attributeMap.getDateArray("datesAttr"))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onSuccess()
+
+        verifyNoInteractions(unitySender)
+    }
+
+    @Test
+    fun `test setAttributes with error response`() {
+        val attributesJsonString = createAttributesJsonString()
+        EngageBySailthruWrapper.setAttributes(attributesJsonString)
+        verify(engageBySailthru).setAttributes(any(), capture(attributesHandlerCaptor))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(ENGAGE_ST_UNITY, error)
+    }
+
+    @Test
+    fun `test setAttributes with invalid JSON`() {
+        EngageBySailthruWrapper.setAttributes(invalidJsonString)
+        verify(engageBySailthru, never()).setAttributes(any(), any())
+
+        verify(unitySender).sendErrorMessage(eq(ENGAGE_ST_UNITY), capture(throwableCaptor))
+        assertTrue(throwableCaptor.value is JSONException)
+    }
+
+    @Test
+    fun `test removeAttribute with success response`() {
+        EngageBySailthruWrapper.removeAttribute(testString)
+        verify(engageBySailthru).removeAttribute(eq(testString), capture(attributesHandlerCaptor))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onSuccess()
+
+        verifyNoInteractions(unitySender)
+    }
+
+    @Test
+    fun `test removeAttribute with error response`() {
+        EngageBySailthruWrapper.removeAttribute(testString)
+        verify(engageBySailthru).removeAttribute(any(), capture(attributesHandlerCaptor))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(ENGAGE_ST_UNITY, error)
+    }
+
+    @Test
+    fun `test clearAttributes with success response`() {
+        EngageBySailthruWrapper.clearAttributes()
+        verify(engageBySailthru).clearAttributes(capture(attributesHandlerCaptor))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onSuccess()
+
+        verifyNoInteractions(unitySender)
+    }
+
+    @Test
+    fun `test clearAttributes with error response`() {
+        EngageBySailthruWrapper.clearAttributes()
+        verify(engageBySailthru).clearAttributes(capture(attributesHandlerCaptor))
+
+        val handler = attributesHandlerCaptor.value
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(ENGAGE_ST_UNITY, error)
+    }
+
+    private fun createAttributesJsonString(): String {
+        val attributesJson = JSONObject().apply {
+            put("mergeRule", 1)
+            put("attributes", JSONObject().apply {
+                put("stringAttr", JSONObject().apply {
+                    put("type", "string")
+                    put("value", "testme")
+                })
+                put("stringsAttr", JSONObject().apply {
+                    put("type", "stringArray")
+                    put("value", JSONArray().apply {
+                        put("testme1")
+                        put("testme2")
+                    })
+                })
+                put("integerAttr", JSONObject().apply {
+                    put("type", "integer")
+                    put("value", 45)
+                })
+                put("integersAttr", JSONObject().apply {
+                    put("type", "integerArray")
+                    put("value", JSONArray().apply {
+                        put(23)
+                        put(34)
+                    })
+                })
+                put("floatAttr", JSONObject().apply {
+                    put("type", "float")
+                    put("value", 1.23f)
+                })
+                put("floatsAttr", JSONObject().apply {
+                    put("type", "floatArray")
+                    put("value", JSONArray().apply {
+                        put(2.34f)
+                        put(3.45f)
+                    })
+                })
+                put("booleanAttr", JSONObject().apply {
+                    put("type", "boolean")
+                    put("value", true)
+                })
+                put("dateAttr", JSONObject().apply {
+                    put("type", "date")
+                    put("value", date1.time.toString())
+                })
+                put("datesAttr", JSONObject().apply {
+                    put("type", "dateArray")
+                    put("value", JSONArray().apply {
+                        put(date1.time.toString())
+                        put(date2.time.toString())
+                    })
+                })
+            })
+        }
+        return attributesJson.toString()
     }
 }
