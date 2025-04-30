@@ -4,8 +4,8 @@ plugins {
 }
 
 android {
-    compileSdk = 35
-    buildToolsVersion = "35.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
     namespace = "com.marigold.sdk.unity"
 
     defaultConfig {
@@ -52,12 +52,12 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("com.marigold.sdk:marigold:24.0.0")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("com.marigold.sdk:marigold:25.0.0")
+    implementation("androidx.core:core-ktx:1.16.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
-    testImplementation("org.robolectric:robolectric:4.12.1")
+    testImplementation("org.robolectric:robolectric:4.14.1")
     testImplementation("androidx.test:core:1.6.1")
 }
