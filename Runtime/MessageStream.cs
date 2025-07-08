@@ -17,6 +17,9 @@ namespace MarigoldSDK {
 		private static extern void _unreadCount ();
 
 		[DllImport("__Internal")]
+		private static extern void _getMessage (string messageID);
+
+		[DllImport("__Internal")]
 		private static extern void _messages ();
 
 		[DllImport("__Internal")]
@@ -57,6 +60,18 @@ namespace MarigoldSDK {
 			MessageStream._unreadCount ();
 			#elif UNITY_ANDROID
 			CallAndroid("unreadCount");
+			#endif
+		}
+		
+		/// <summary>
+		/// Asyncronously returns the Message for the provided message ID.
+		/// Message will be returned with the OnMessageReceivedEvent - add a handler to handle this. 
+		/// </summary>
+		public void GetMessage(string messageID) {
+			#if UNITY_IOS
+			MessageStream._getMessage (messageID);
+			#elif UNITY_ANDROID
+			CallAndroid("getMessage", messageID);
 			#endif
 		}
 		
@@ -177,23 +192,21 @@ namespace MarigoldSDK {
 			OnErrorEvent.Invoke(this, args);
 		}
 
+		public void ReceiveMessageJSONData(string messageJSON) {
+			var messageData = JSON.Parse(messageJSON);
+			Message message = populateMessage(messageData);
+
+			MessageReceivedEventArgs args = new MessageReceivedEventArgs ();
+			args.message = message;
+			OnMessageReceivedEvent(this, args);
+		}
+
 		public void ReceiveMessagesJSONData(string messagesJSON) {
 			List<Message> messages = new List<Message>();
 			var jsonMessagesArray = JSON.Parse(messagesJSON);
 
 			for (int i = 0; i < jsonMessagesArray.Count; i++ ) {
-				Message m = new Message();
-				m.title = jsonMessagesArray[i]["title"];
-				m.messageID = jsonMessagesArray[i]["id"];
-				m.text = jsonMessagesArray[i]["text"];
-				m.URL = jsonMessagesArray[i]["url"];
-				m.videoURL = jsonMessagesArray[i]["card_media_url"];
-				m.imageURL = jsonMessagesArray[i]["card_image_url"];
-				m.type = Message.StringToMessageType(jsonMessagesArray[i]["type"]);
-				m.createdAt = jsonMessagesArray[i]["created_at"];
-				m.isRead = jsonMessagesArray[i]["is_read"].AsBool;
-				m.htmlText = jsonMessagesArray[i]["html_text"];
-				m.attributes = jsonMessagesArray[i]["custom"].AsObject;
+				Message m = populateMessage(jsonMessagesArray[i]);
 				messages.Add(m);
 			}
 
@@ -201,13 +214,29 @@ namespace MarigoldSDK {
 			args.messages = messages;
 			OnMessagesReceivedEvent(this, args);
 		}
+
+		private Message populateMessage(JSONNode messageJSON) {
+			Message message = new Message();
+			message.title = messageJSON["title"];
+			message.messageID = messageJSON["id"];
+			message.text = messageJSON["text"];
+			message.URL = messageJSON["url"];
+			message.videoURL = messageJSON["card_media_url"];
+			message.imageURL = messageJSON["card_image_url"];
+			message.type = Message.StringToMessageType(messageJSON["type"]);
+			message.createdAt = messageJSON["created_at"];
+			message.isRead = messageJSON["is_read"].AsBool;
+			message.htmlText = messageJSON["html_text"];
+			message.attributes = messageJSON["custom"].AsObject;
+			return message;
+		}
 		#endregion
 
 		#region Helpers
-        
+
 
 #nullable enable
-		public JSONClass GetJsonForMessage (Message message) {
+		public JSONClass GetJsonForMessage(Message message) {
 			JSONClass jsonObject = new JSONClass();
 			if (message.messageID != null) jsonObject["id"] = message.messageID;
 			if (message.title != null) jsonObject["title"] = message.title;
@@ -248,6 +277,7 @@ namespace MarigoldSDK {
 		
 		#region Callbacks
 		public static event EventHandler<MessageStreamErrorEventArgs> OnErrorEvent;
+		public static event EventHandler<MessageReceivedEventArgs> OnMessageReceivedEvent;
 		public static event EventHandler<MessagesReceivedEventArgs> OnMessagesReceivedEvent;
 		public static event EventHandler<UnreadCountReceivedEventArgs> OnUnreadCountReceivedEvent;
 		#endregion
@@ -258,6 +288,14 @@ namespace MarigoldSDK {
 	/// </summary>
 	public class MessageStreamErrorEventArgs :EventArgs {
 		public string ErrorDescription { get; set; }
+	}
+
+
+	/// <summary>
+	/// Marigold message received event.
+	/// </summary>
+	public class MessageReceivedEventArgs :EventArgs {
+		public Message message { get; set; }
 	}
 
 

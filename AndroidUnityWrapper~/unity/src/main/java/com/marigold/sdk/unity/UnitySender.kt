@@ -27,6 +27,7 @@ internal class UnitySender {
 
         // Message Stream methods
         internal const val MESSAGE_STREAM_RECEIVE_UNREAD_COUNT = "ReceiveUnreadCount"
+        internal const val MESSAGE_STREAM_RECEIVE_MESSAGE = "ReceiveMessageJSONData"
         internal const val MESSAGE_STREAM_RECEIVE_MESSAGES = "ReceiveMessagesJSONData"
     }
 }

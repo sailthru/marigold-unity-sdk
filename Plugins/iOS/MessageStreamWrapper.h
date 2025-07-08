@@ -5,6 +5,8 @@
 
 extern "C" void _unreadCount();
 
+extern "C" void _getMessage (const char *messageID);
+
 extern "C" void _messages ();
 
 extern "C" void _showMessageDetail(const char *messageJSON);

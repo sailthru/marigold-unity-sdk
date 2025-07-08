@@ -4,6 +4,7 @@
 const char *MAR_STREAM_MESSAGE_STREAM = "MessageStream";
 const char *MAR_STREAM_RECEIVE_ERROR = "ReceiveError";
 const char *MAR_STREAM_RECEIVE_UNREAD_COUNT = "ReceiveUnreadCount";
+const char *MAR_STREAM_RECEIVE_MESSAGE = "ReceiveMessageJSONData";
 const char *MAR_STREAM_RECEIVE_MESSAGES = "ReceiveMessagesJSONData";
 
 static MessageStreamWrapper * _sharedInstance = nil;
@@ -20,6 +21,7 @@ static dispatch_once_t onceSharedPredicate = 0;
 
 @property (nonatomic, copy) void (^errorBlock)(NSError *error);
 @property (nonatomic, copy) void (^unreadCountBlock)(NSUInteger unreadCount, NSError *error);
+@property (nonatomic, copy) void (^messageBlock)(MARMessage *message, NSError *error);
 @property (nonatomic, copy) void (^messagesBlock)(NSArray *messages, NSError *error);
 @property (nonatomic, strong) MARMessageStream *messageStream;
 
@@ -35,6 +37,12 @@ static dispatch_once_t onceSharedPredicate = 0;
 
 void _unreadCount() {
     [[MessageStreamWrapper shared] unreadCount];
+}
+
+# pragma mark Message
+
+void _getMessage (const char *messageID) {
+    [[MessageStreamWrapper shared] messageFor:[NSString stringWithUTF8String:messageID]];
 }
 
 # pragma mark Messages
@@ -117,6 +125,21 @@ void _markMessagesAsRead(const char *messagesJSON) {
         UnitySendMessage(MAR_STREAM_MESSAGE_STREAM, MAR_STREAM_RECEIVE_UNREAD_COUNT, [[NSString stringWithFormat:@"%lu", (unsigned long)unreadCount] UTF8String]);
     };
     
+    self.messageBlock = ^(MARMessage *message, NSError *error) {
+        if (error) {
+            UnitySendMessage(MAR_STREAM_MESSAGE_STREAM, MAR_STREAM_RECEIVE_ERROR, [[error localizedDescription] UTF8String]);
+            return;
+        }
+        
+        NSString *jsonString = @"{}";
+        if (message) {
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[message dictionary] options:0 error:nil];
+            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        }
+        
+        UnitySendMessage(MAR_STREAM_MESSAGE_STREAM, MAR_STREAM_RECEIVE_MESSAGE, [jsonString UTF8String]);
+    };
+    
     __weak __typeof__(self) weakSelf = self;
     self.messagesBlock = ^(NSArray *messages, NSError *error) {
         if (error) {
@@ -141,6 +164,12 @@ void _markMessagesAsRead(const char *messagesJSON) {
 
 - (void)unreadCount {
     [self.messageStream unreadCount:self.unreadCountBlock];
+}
+
+# pragma mark Message
+
+- (void)messageFor:(NSString *)messageID {
+    [self.messageStream messageFor:messageID withCompletion:[MessageStreamWrapper shared].messageBlock];
 }
 
 # pragma mark Messages

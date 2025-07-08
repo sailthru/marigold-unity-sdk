@@ -6,6 +6,7 @@ import com.marigold.sdk.MessageActivity
 import com.marigold.sdk.MessageStream
 import com.marigold.sdk.enums.ImpressionType
 import com.marigold.sdk.model.Message
+import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_MESSAGE
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_MESSAGES
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_UNREAD_COUNT
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_UNITY
@@ -48,6 +49,8 @@ class MessageStreamWrapperTest {
     @Captor
     private lateinit var messageStreamVoidHandlerCaptor: ArgumentCaptor<MessageStream.MessageStreamHandler<Void?>>
     @Captor
+    private lateinit var messageStreamMessageHandlerCaptor: ArgumentCaptor<MessageStream.MessageStreamHandler<Message>>
+    @Captor
     private lateinit var messagesHandlerCaptor: ArgumentCaptor<MessageStream.MessagesHandler>
     @Captor
     private lateinit var messageDeletedHandlerCaptor: ArgumentCaptor<MessageStream.MessageDeletedHandler>
@@ -68,6 +71,7 @@ class MessageStreamWrapperTest {
     private val error = Error("Test Error")
     private val messageString = "{\"id\":\"12345\",\"title\":\"test\"}"
     private val messagesString = "[{\"id\":\"12345\",\"title\":\"test\"},{\"id\":\"23456\",\"title\":\"me\"}]"
+    private val messageId = "123456"
 
     @Before
     fun setup() {
@@ -102,6 +106,32 @@ class MessageStreamWrapperTest {
         verify(messageStream).getUnreadMessageCount(capture(messageStreamIntHandlerCaptor))
 
         val handler = messageStreamIntHandlerCaptor.value
+
+        handler.onFailure(error)
+
+        verify(unitySender).sendErrorMessage(MESSAGE_STREAM_UNITY, error)
+    }
+
+    @Test
+    fun `test getMessage with success response`() {
+        MessageStreamWrapper.getMessage(messageId)
+        verify(messageStream).getMessage(eq(messageId), capture(messageStreamMessageHandlerCaptor))
+
+        val handler = messageStreamMessageHandlerCaptor.value
+        val message: Message = mock()
+        val messageJson = JSONObject(messageString)
+        doReturn(messageJson).whenever(message).toJSON()
+        handler.onSuccess(message)
+
+        verify(unitySender).sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_MESSAGE, messageJson.toString())
+    }
+
+    @Test
+    fun `test getMessage with error response`() {
+        MessageStreamWrapper.getMessage(messageId)
+        verify(messageStream).getMessage(eq(messageId), capture(messageStreamMessageHandlerCaptor))
+
+        val handler = messageStreamMessageHandlerCaptor.value
 
         handler.onFailure(error)
 

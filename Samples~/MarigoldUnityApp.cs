@@ -38,6 +38,23 @@ public class MarigoldUnityApp : MonoBehaviour {
 		MessageStream.OnErrorEvent += (object sender, MessageStreamErrorEventArgs e) => {
 			Debug.Log ("Message Stream Error returned: " + e.ErrorDescription);
 		};
+		MessageStream.OnMessageReceivedEvent += (object sender, MessageReceivedEventArgs e) => {
+			if (e.message != null) {
+				Message message = e.message;
+				Debug.Log ("Marigold message");
+				Debug.Log (message.title);
+				Debug.Log (message.messageID);
+				Debug.Log (message.createdAt);
+				Debug.Log (message.URL);
+				Debug.Log (message.imageURL);
+				Debug.Log (message.videoURL);
+				Debug.Log (message.type);
+				Debug.Log (message.text);
+				Debug.Log (message.isRead);
+				Debug.Log (message.htmlText);
+				Debug.Log (message.attributes);
+			}
+		};
 		MessageStream.OnMessagesReceivedEvent += (object sender, MessagesReceivedEventArgs e) => {
 			if (e.messages != null && e.messages.Count > 0) {
 				Message message = e.messages[0];

@@ -15,6 +15,7 @@
 const char *messageJson = "{\"id\":\"12345\",\"title\":\"testmsg\"}";
 const char *messagesJson = "[{\"id\":\"12345\",\"title\":\"testmsg\"},{\"id\":\"other\",\"title\":\"msg2\"}]";
 const char *invalidMessageJson = "{]";
+const char *messageId = "123456";
 
 @interface MessageStreamWrapper ()
 - (MARMessage *)messageFromJSON:(NSString *)JSONString;
@@ -47,6 +48,11 @@ const char *invalidMessageJson = "{]";
 - (void)testUnreadCount {
     _unreadCount();
     OCMVerify([self.mockMessageStream unreadCount:[MessageStreamWrapper shared].unreadCountBlock]);
+}
+
+- (void)testGetMessage {
+    _getMessage(messageId);
+    OCMVerify([self.mockMessageStream messageFor:@"123456" withCompletion:[MessageStreamWrapper shared].messageBlock]);
 }
 
 - (void)testMessages {
@@ -155,6 +161,29 @@ const char *invalidMessageJson = "{]";
 }
 
 - (void)testUnreadCountBlockWithError {
+    [MessageStreamWrapper shared].unreadCountBlock(0, self.error);
+    [[UnitySender shared] checkMessageContainsWithObject:@"MessageStream" method:@"ReceiveError" message:@"test error message"];
+}
+
+- (void)testMessageBlockWithNil {
+    [MessageStreamWrapper shared].messageBlock(nil, nil);
+    [[UnitySender shared] checkMessageEqualsWithObject:@"MessageStream" method:@"ReceiveMessageJSONData" message:@"{}"];
+}
+
+- (void)testMessageBlockWithMessages {
+    NSString *messageString = [NSString stringWithUTF8String:messageJson];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:[messageString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    MARMessage *msg = [[MARMessage alloc] initWithDictionary:json];
+    [MessageStreamWrapper shared].messageBlock(msg, nil);
+    XCTAssertEqual(1, [[UnitySender shared].messages count]);
+    UnityMessage *message = [[UnitySender shared].messages firstObject];
+    XCTAssertTrue([message.object isEqualToString:@"MessageStream"]);
+    XCTAssertTrue([message.method isEqualToString:@"ReceiveMessageJSONData"]);
+    XCTAssertTrue([message.message containsString:@"\"id\":\"12345\""]);
+    XCTAssertTrue([message.message containsString:@"\"title\":\"testmsg\""]);
+}
+
+- (void)testMessageBlockWithError {
     [MessageStreamWrapper shared].unreadCountBlock(0, self.error);
     [[UnitySender shared] checkMessageContainsWithObject:@"MessageStream" method:@"ReceiveError" message:@"test error message"];
 }

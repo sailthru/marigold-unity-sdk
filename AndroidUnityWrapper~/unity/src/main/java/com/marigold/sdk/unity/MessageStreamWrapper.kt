@@ -4,6 +4,7 @@ import com.marigold.sdk.MessageActivity
 import com.marigold.sdk.MessageStream
 import com.marigold.sdk.enums.ImpressionType
 import com.marigold.sdk.model.Message
+import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_MESSAGE
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_MESSAGES
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_RECEIVE_UNREAD_COUNT
 import com.marigold.sdk.unity.UnitySender.Companion.MESSAGE_STREAM_UNITY
@@ -23,6 +24,23 @@ object MessageStreamWrapper {
         messageStream.getUnreadMessageCount(object : MessageStream.MessageStreamHandler<Int> {
             override fun onSuccess(value: Int) {
                 unitySender.sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_UNREAD_COUNT, value.toString())
+            }
+            override fun onFailure(error: Error) {
+                unitySender.sendErrorMessage(MESSAGE_STREAM_UNITY, error)
+            }
+        })
+    }
+    
+    fun getMessage(messageId: String) {
+        messageStream.getMessage(messageId, object : MessageStream.MessageStreamHandler<Message> {
+            override fun onSuccess(value: Message) = try {
+                val toJsonMethod = Message::class.java.getDeclaredMethod("toJSON")
+                toJsonMethod.isAccessible = true
+
+                val messageJson = toJsonMethod.invoke(value) as JSONObject
+                unitySender.sendUnityMessage(MESSAGE_STREAM_UNITY, MESSAGE_STREAM_RECEIVE_MESSAGE, messageJson.toString())
+            } catch (e: Exception) {
+                unitySender.sendErrorMessage(MESSAGE_STREAM_UNITY, e)
             }
             override fun onFailure(error: Error) {
                 unitySender.sendErrorMessage(MESSAGE_STREAM_UNITY, error)
@@ -61,7 +79,7 @@ object MessageStreamWrapper {
     }
 
     fun registerMessageImpression(messageString: String, typeCode: Int) {
-        val message = getMessage(messageString) ?: return
+        val message = createMessage(messageString) ?: return
         val type: ImpressionType = when (typeCode) {
             0 -> ImpressionType.IMPRESSION_TYPE_IN_APP_VIEW
             1 -> ImpressionType.IMPRESSION_TYPE_STREAM_VIEW
@@ -75,7 +93,7 @@ object MessageStreamWrapper {
     }
 
     fun removeMessage(messageString: String) {
-        val message = getMessage(messageString) ?: return
+        val message = createMessage(messageString) ?: return
         messageStream.deleteMessage(message, object : MessageStream.MessageDeletedHandler {
             override fun onSuccess() {}
             override fun onFailure(error: Error) {
@@ -94,7 +112,7 @@ object MessageStreamWrapper {
     }
 
     fun markMessageAsRead(messageString: String) {
-        val message = getMessage(messageString) ?: return
+        val message = createMessage(messageString) ?: return
         messageStream.setMessageRead(message, object : MessageStream.MessagesReadHandler {
             override fun onSuccess() {}
             override fun onFailure(error: Error) {
@@ -122,16 +140,16 @@ object MessageStreamWrapper {
             val list = mutableListOf<Message>()
             val jsonArray = JSONArray(arrayString)
             for (i in 0 until jsonArray.length()) {
-                val message = getMessage(jsonArray.getString(i)) ?: continue
+                val message = createMessage(jsonArray.getString(i)) ?: continue
                 list.add(message)
             }
             list
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
 
-    private fun getMessage(messageString: String): Message? = try {
+    private fun createMessage(messageString: String): Message? = try {
         val constructor: Constructor<Message> = Message::class.java.getDeclaredConstructor(String::class.java)
         constructor.isAccessible = true
         constructor.newInstance(messageString)

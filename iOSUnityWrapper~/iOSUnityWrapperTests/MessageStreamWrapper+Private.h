@@ -4,6 +4,7 @@
 @interface MessageStreamWrapper()
 
 @property (nonatomic, copy) void (^errorBlock)(NSError *error);
+@property (nonatomic, copy) void (^messageBlock)(MARMessage *message, NSError *error);
 @property (nonatomic, copy) void (^messagesBlock)(NSArray *messages, NSError *error);
 @property (nonatomic, copy) void (^unreadCountBlock)(NSUInteger unreadCount, NSError *error);
 @property (nonatomic, strong) MARMessageStream *messageStream;
